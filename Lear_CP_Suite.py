@@ -4729,6 +4729,8 @@ def ODM():
                 if(str(control)!="None"):
                     
                     #Gauge
+                    
+                    #Hola
                 
                     cell_obj2 = HCO.cell(row=rowhco, column = 3)
                     gauge=float(cell_obj2.value)
