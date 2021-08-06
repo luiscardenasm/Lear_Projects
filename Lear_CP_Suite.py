@@ -92,6 +92,7 @@ pd.set_option('display.width', 1000)
 from openpyxl.utils import get_column_letter
 import shutil
 from tkinter.filedialog import askdirectory
+from collections import Counter
 
 #Text an cell Style-------------------------------------------------------------------------------------------------------------------
 fontgreen = Font(name='Calibri',
@@ -4339,6 +4340,7 @@ def ODM():
             requested=str(name)
             os.chdir(path_calculations_folder)
             os.mkdir(directory_name)
+            lmi_name="LMI_BLANK.xlsx"
             
             #------------------------------------------------------------------------------#      
             #Copy BOM To each folder                                                       #
@@ -4347,16 +4349,20 @@ def ODM():
             # Source path
         
             source =path_TI+"/"+str(File[counter])+".xlsx"
+            Source_LMI='''C:/Users/LCardenasMontaz/Desktop/LMI/'''+str(lmi_name)
+            
              
             # Destination path
             destination = path_calculations_folder+"/"+directory_name+"/"+str(File[counter])+".xlsx"
             destination2 = path_calculations_folder+"/"+directory_name+"/"+directory_name+".xlsx" 
+            destination3= path_calculations_folder+"/"+directory_name+"/"+directory_name+"_LMI"+".xlsx"
             # Copy the content of
             # source to destination
              
             try:
                 shutil.copy(source, destination)
                 shutil.copy(source, destination2)
+                shutil.copy(Source_LMI, destination3)
                 print("File copied successfully.")
              
             # If source and destination are same
@@ -4483,6 +4489,10 @@ def ODM():
             
             #@------#remove duplicated values from list#------@#
             number_rows=len(list_from_to_conn)/2
+            
+            #list used to get number of splices
+            list_to_use_splices=list_from_to_conn
+            
             list_from_to_conn = list(dict.fromkeys(list_from_to_conn))
             list_from_to_conn.sort()
             
@@ -4504,9 +4514,6 @@ def ODM():
                 NEN.cell(row=1, column=columna).value=list_of_headers[columna-1]
                 NEN.cell(row=1, column=columna).font = fontwhite
                 NEN.cell(row=1, column=columna).fill=my_filldarkgray
-                
-            
-                
             
             #@------#write headers of seconday table#------@#
             list_of_headers_secondary_table=["ID","from","to","Insertions/ends","Description",
@@ -4535,6 +4542,8 @@ def ODM():
                 
             counterNEO_secondarytable_start=counterNEO+5
             counterNEO_secondarytable_start_record=counterNEO_secondarytable_start
+            
+
                 
             #@------#write contents of secondary table [non repeated connector]#------@#
             for value in range(len(list_from_to_conn)):
@@ -4877,14 +4886,46 @@ def ODM():
                 AN.cell(row=rowinicial, column=6).value=str(element_name)
                 AN.cell(row=rowinicial, column=9).value=str(element_name)
                 rowinicial=rowinicial+1
-                    
-                
+                        
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
         
-        print("Terminado :D")
+
+        os.chdir(path_calculations_folder+"/"+directory_name)
+
         
+        #------------------------------------------------------------------------------#      
+        #Write data LMI                                                                #
+        #------------------------------------------------------------------------------# 
+        
+        book_LMI = openpyxl.load_workbook(directory_name+"_LMI"+".xlsx")
+            
+
+        #@------#Read old sheets#------@#
+        LR=book_LMI["Labor Report"]
+        SPL=book_LMI["Splicing"]
+
+        #@------#Get splices information#------@#
+        list_splices=[]
+        for data in list_to_use_splices:
+            if(str(data)[0:3]=="STD"):
+                list_splices.append(data)
+        splices_dict=Counter(list_splices)
+        list_splices2=list(splices_dict.values())
+        splices_dict2=Counter(list_splices2)
+    
+        #@------#Write initial data#------@#
+        LR.cell(row=6, column=8).value=int(counterNEO-1)
+        LR.cell(row=9, column=11).value=directory_name
+        
+        #@------#Write splices sheet#------@#
+        for key in splices_dict2:
+            qty=splices_dict2.get(key)
+            SPL.cell(row=int(key)+3, column=3).value=int(qty)
+        
+        book_LMI.save(directory_name+"_LMI"+".xlsx")
+    print("Terminado :D")
         
 def ODM2():
     
@@ -4924,19 +4965,16 @@ def ODM2():
         
         
         #@------#identify requested PN column number#------@#
-        
-        
         for numberofrow in range (number_of_rows-2):
+            cell_obj = BS.cell(row = numberofrow+3, column = 1)
             cell_obj = BS.cell(row = numberofrow+3, column = 1)
             control=str(cell_obj.value)
 
             list_components.append(control)
             
-
     list_components = list(dict.fromkeys(list_components))
     list_components.sort()
     print(list_components)
-    
 
     mw = Workbook()
     mw.save("master.xlsx")
@@ -4948,10 +4986,6 @@ def ODM2():
     for element in range(len(list_components)):
         MS.cell(row=element+1, column=1).value=list_components[element]
     mw.save("master.xlsx")
-    
-        #FAFDSF
-
-            
     
 def OpenUrl():
     webbrowser.open_new("https://learcorporation-my.sharepoint.com/:f:/g/personal/lcardenasmontaz_lear_com/EmhvprrX705FoDRji8Od_IcBuStgZ4Ak21wpSC-t_WQUGg?e=nHMbKu")
