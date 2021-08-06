@@ -1,5 +1,4 @@
 #ODM
-#hola3
 
 
 from tkinter import *
@@ -4457,7 +4456,7 @@ def ODM():
 
             for valor in listaHNNEO:
                 if(str(valor)==requested):
-                    print(str(valor))
+                    
                     temp_container=[]
                     for columna in columns_to_read_ne:
                         cell_obj = NEO.cell(row = rowinicial, column = columna)
@@ -4533,8 +4532,6 @@ def ODM():
                     row_term_iter=row_term_iter+1
                 
                 start_column_term=start_column_term+1
-                
-                
                 
             counterNEO_secondarytable_start=counterNEO+5
             counterNEO_secondarytable_start_record=counterNEO_secondarytable_start
@@ -4881,12 +4878,12 @@ def ODM():
                 AN.cell(row=rowinicial, column=9).value=str(element_name)
                 rowinicial=rowinicial+1
                     
-            
-
                 
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
+        
+        print("Terminado :D")
         
         
 def ODM2():
@@ -4952,7 +4949,7 @@ def ODM2():
         MS.cell(row=element+1, column=1).value=list_components[element]
     mw.save("master.xlsx")
     
-        
+        #FAFDSF
 
             
     
