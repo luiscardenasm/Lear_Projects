@@ -4895,6 +4895,7 @@ def ODM():
                     AN.cell(row=rowinicial, column=3).value="Tape"
                 AN.cell(row=rowinicial, column=6).value=str(element_name)
                 AN.cell(row=rowinicial, column=9).value=str(element_name)
+                AN.cell(row=rowinicial, column=15).value="FT"
                 rowinicial=rowinicial+1
                         
             book_bom.save(directory_name+".xlsx")
