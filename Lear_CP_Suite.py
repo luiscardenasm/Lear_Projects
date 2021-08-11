@@ -2049,8 +2049,7 @@ def Button_Comparer_V2():
                     lista_uom.append(UOM_old[counter])
                     
                     EPN_old_temp.append(str(item))
-                    lista_quants.append(float(value2))
-                    
+                    lista_quants.append(float(value2))                
                     IPN_old_temp.append(IPN_old[counter])
                     Type_old_temp.append(Type_old[counter])
                     Group_old_temp.append(Group_old[counter])
@@ -2342,15 +2341,21 @@ def Button_Comparer_V2():
     for dato in EPN_new:
         columnwrite=1
         pnrow=master_new_pn_dict.get(str(dato))
+        
+        print(dato)
+        
 
         HC.cell(row=rowwrite, column=columnwrite).value=dato
         HC.cell(row=rowwrite, column=columnwrite).border=cell_border
         columnwrite=2
-        for elemento in pnrow:
-            HC.cell(row=rowwrite, column=columnwrite).value=elemento
-            HC.cell(row=rowwrite, column=columnwrite).border=cell_border
-            columnwrite+=1
-        rowwrite+=1
+        
+        print(type(pnrow))
+        if(str(type(pnrow))!="<class 'NoneType'>"):
+            for elemento in pnrow:
+                HC.cell(row=rowwrite, column=columnwrite).value=elemento
+                HC.cell(row=rowwrite, column=columnwrite).border=cell_border
+                columnwrite+=1
+            rowwrite+=1
         
     for dato in pn_removed:
         columnwrite=1
@@ -4562,8 +4567,9 @@ def ODM():
                     NEN.cell(row=current_row, column=10).value='x'
                 
                 if(list_from_to_conn[value][0:3]=="STD"):
-                    NEN.cell(row=current_row, column=5).value='=IF(D'+str(current_row)+'<5,"HTSHRNK TUBE,DUAL-WALL,50 MM LONG,BLK,BLK,110 C,XLPO,6 I.D.,774185P002",IF(AND(D'+str(current_row)+'>=5,D'+str(current_row)+'<=9),"HTSHRNK TUBE,DUAL-WALL,50 MM LONG,BLK,BLK,125 C,XLPO,11 I.D.,QSZH-125-NR3",""))'
-                    NEN.cell(row=current_row, column=11).value='=IF(D'+str(current_row)+'<5,"3299362G2",IF(AND(D'+str(current_row)+'>=5,D'+str(current_row)+'<=9),"3299362M9","3299365JY"))'
+                    NEN.cell(row=current_row, column=5).value='''=IF(G'''+str(current_row)+'''="GENERIC SPLICE SEALED",IF(D'''+str(current_row)+'''<5,"HTSHRNK TUBE,DUAL-WALL,50 MM LONG,BLK,BLK,110 C,XLPO,6 I.D.,774185P002",IF(AND(D'''+str(current_row)+'''>=5,D'''+str(current_row)+'''<=9),"HTSHRNK TUBE,DUAL-WALL,50 MM LONG,BLK,BLK,125 C,XLPO,11 I.D.,QSZH-125-NR3","")),"Splice Tape")'''
+                    NEN.cell(row=current_row, column=7).value='''=_xlfn.XLOOKUP(A'''+str(current_row)+''','Assembly Nav costed'!$J$1:$J$5000,'Assembly Nav costed'!$I$1:$I$5000,"NOT FOUND",0)'''
+                    NEN.cell(row=current_row, column=11).value='''=IF(AND(G'''+str(current_row)+'''<>"GENERIC SPLICE SEALED",G'''+str(current_row)+'''<>"GENERIC SPLICE UNSEALED"),"What is this?",IF(G'''+str(current_row)+'''="GENERIC SPLICE SEALED",IF(D'''+str(current_row)+'''<5,"3299362G2",IF(AND(D'''+str(current_row)+'''>=5,D'''+str(current_row)+'''<=9),"3299362M9","3299365JY")),"26-4412-BC"))'''
                 counterNEO_secondarytable_start=counterNEO_secondarytable_start+1
                 
             counterNEO_secondarytable_end=current_row
@@ -4815,16 +4821,19 @@ def ODM():
                 counter3=0
                 for cell in lista:
                     if(str(Control[counter3])!="None"):
+                        
                         if(columnainicial==2 and str(cell)[0:3]=="SCP"):
                             AN.cell(row=rowinicial, column=1).value=directory_name
+                            AN.cell(row=rowinicial, column=3).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE SEALED","Splice Sealed",IF(I'''+str(rowinicial)+'''="GENERIC SPLICE UNSEALED","Splice Unsealed","NOT FOUND"))'''
                             AN.cell(row=rowinicial, column=columnainicial).value="=VLOOKUP(J"+str(rowinicial)+",'Netlist Extraction costed'!A"+str(counterNEO_secondarytable_start_record)+":K"+str(counterNEO_secondarytable_end)+",11,0)"
                             AN.cell(row=rowinicial, column=6).value='=B'+str(rowinicial)
                             AN.cell(row=rowinicial, column=11).value="=VLOOKUP(J"+str(rowinicial)+",'Netlist Extraction costed'!A"+str(counterNEO_secondarytable_start_record)+":K"+str(counterNEO_secondarytable_end)+",5,0)"
-                            AN.cell(row=rowinicial, column=12).value="Tube/Non-Reflective/Heatshrink"
-                            AN.cell(row=rowinicial, column=15).value="EA"
-                            AN.cell(row=rowinicial, column=16).value="HSSA"
+                            AN.cell(row=rowinicial, column=12).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE SEALED","Tube/Non-Reflective/Heatshrink","")'''
+                            AN.cell(row=rowinicial, column=14).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE UNSEALED",0.2931,1)'''
+                            AN.cell(row=rowinicial, column=15).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE UNSEALED","FT","EA")'''
+                            AN.cell(row=rowinicial, column=16).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE SEALED","HSSA","")'''
                         else:
-                            if(columnainicial!=15):
+                            if(columnainicial!=15 and columnainicial!=14):
                                 AN.cell(row=rowinicial, column=columnainicial).value=cell
                     
                         if(columnainicial==2 and str(cell)[0:3]!="SCP"):
@@ -4835,9 +4844,8 @@ def ODM():
                             AN.cell(row=rowinicial, column=12).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$F$356,4,0)"
                             AN.cell(row=rowinicial, column=15).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$F$356,5,0)"
                             AN.cell(row=rowinicial, column=16).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$F$356,6,0)"
-                            
-                        AN.cell(row=rowinicial, column=14).value=1
-
+                            AN.cell(row=rowinicial, column=14).value=1
+                        
                         rowinicial=rowinicial+1
                     counter3=counter3+1
                 counter2=counter2+1
