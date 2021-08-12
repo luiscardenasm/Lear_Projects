@@ -4681,6 +4681,8 @@ def ODM():
                     
                 value=str(cell_obj.value)
                 temp_container.append(value)
+                
+            
             
             for columna in range(len(columns_to_read_oo)+3):
                         if(str(temp_container[columna-1])!="None"):
@@ -4688,12 +4690,33 @@ def ODM():
                             ON.cell(row=4, column=columna+1).font = fontwhite
                             ON.cell(row=4, column=columna+1).fill=my_filldarkgray
                             
+            #@------#ADD headers (secondary headers) to overstocks costed worksheet#------@#
+            secondary_headers_overstocks=["Lineal  Length Tape (M)","Usage FT","Length Tube MT","PN Conduit/Sleeve/Tape",
+                                          "Tube Spot Tape-Type","Tube Spot Tape-Qty","Tube Spot Tape-Usage","Cut tape with knife","Cut @ specific length"]
+            
+            column_start_vstck=len(columns_to_read_oo)+4
+            
+            for secheader in secondary_headers_overstocks:
+                ON.cell(row=4, column=column_start_vstck).value=str(secheader)
+                ON.cell(row=4, column=column_start_vstck).font = fontbolnormal
+                ON.cell(row=4, column=column_start_vstck).fill=my_filllightgray
+                column_start_vstck=column_start_vstck+1
+                
+                            
                             
             ON.cell(row=2, column=1).value="Overstock List"
             ON.cell(row=2, column=1).font = fontboldbig
             
             ON.cell(row=3, column=1).value="Note 1 - All lengths Rounded To The Nearest mm,   Note 2 - Length Does Not Include Additional Tape For Breakouts Or Additional Tape To Back Of Connector"
             ON.merge_cells(start_row=3, start_column=1, end_row=3, end_column=8)
+            
+            
+            #@------#ADD headers (most right)#------@#
+            
+            ON.cell(row=3, column=43).value="charge by row [1 tube or sleeve][2 longitudinal tape]"
+            ON.cell(row=3, column=44).value="[spot tape usage][longitudinal tape & tube]"
+            ON.cell(row=3, column=45).value="Charge by row [1 by reverse tape]"
+            ON.cell(row=3, column=46).value="Charge by row [1 by longitudinal tape]"
             
             #@------#ADD special apperance added columns#------@#
             
@@ -4703,8 +4726,8 @@ def ODM():
             ON.cell(row=4, column=5).font = fontbolnormal
             ON.cell(row=4, column=5).fill=my_filllightgray
             
-            ON.cell(row=4, column=26).font = fontbolnormal
-            ON.cell(row=4, column=26).fill=my_filllightgray
+            ON.cell(row=4, column=27).font = fontbolnormal
+            ON.cell(row=4, column=27).fill=my_filllightgray
             
             
             #------------------------------------------------------------------------------#      
