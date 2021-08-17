@@ -4402,7 +4402,7 @@ def ODM():
             NEN = book_bom.create_sheet("Netlist Extraction costed",3)
             NEN.title = "Netlist Extraction costed"
             
-            ON = book_bom.create_sheet("Overstocks costed",6)
+            ON = book_bom.create_sheet("Overstocks costed",7)
             ON.title = "Overstocks costed"
             
             #print(directory_name+"/"+directory_name+".xlsx")
@@ -4464,7 +4464,11 @@ def ODM():
             counterNEO=0
             list_from_to_conn=[]
             list_from_to_term=[]
-
+            
+            twist_names=[]
+            wyre_type=[]
+            #wyre_length=[]
+            
             for valor in listaHNNEO:
                 if(str(valor)==requested):
                     
@@ -4475,8 +4479,22 @@ def ODM():
                         temp_container.append(value)
                     
                     for columna in columns_to_read_ne:
+                        
                         if(str(temp_container[columna-1])!="None"):
-                            NEN.cell(row=rowinicial2, column=columna).value=temp_container[columna-1]
+                            if(int(columna-1)==9 or int(columna-1)==11):
+                                NEN.cell(row=rowinicial2, column=columna).value=float(temp_container[columna-1])
+                            else:
+                                NEN.cell(row=rowinicial2, column=columna).value=temp_container[columna-1]
+                            
+                            #@------#get information for shield and twist table#------@#
+                            #if(columna==12):
+                                #wyre_length.append(temp_container[columna-1])
+                            if(columna==14):
+                                wyre_type.append(temp_container[columna-1])
+                            if(columna==24):
+                                twist_names.append(temp_container[columna-1])
+
+    
                             
                             #@------#get from to, to conn data and store in list#------@#
                             if(columna==4 or columna==7 ):
@@ -4484,7 +4502,9 @@ def ODM():
                             #@------#get From Term, to Term data and store in list#------@#
                             if(columna==6 or columna==9 ):
                                 list_from_to_term.append(temp_container[columna-1])
-                            
+                        else:
+                            if(columna==24):
+                                twist_names.append(temp_container[columna-1])
                                 
                     counterNEO=counterNEO+1
                     rowinicial2=rowinicial2+1 
@@ -4611,7 +4631,11 @@ def ODM():
                 
                 start_row_termtype=start_row_termtype+2
                 start_column_termtype_formula=start_column_termtype_formula+1
-        
+            
+            
+            list_not_accepted_cables=["A2B","COAX","Ethernet","USB","LVDS","R2PP-E1","Pretensioner","Knee"]
+            
+                            
             #------------------------------------------------------------------------------#      
             #Read Overstocks original                                                      #
             #------------------------------------------------------------------------------# 
@@ -4702,8 +4726,6 @@ def ODM():
                 ON.cell(row=4, column=column_start_vstck).fill=my_filllightgray
                 column_start_vstck=column_start_vstck+1
                 
-                            
-                            
             ON.cell(row=2, column=1).value="Overstock List"
             ON.cell(row=2, column=1).font = fontboldbig
             
@@ -4920,14 +4942,105 @@ def ODM():
                 AN.cell(row=rowinicial, column=9).value=str(element_name)
                 AN.cell(row=rowinicial, column=15).value="FT"
                 rowinicial=rowinicial+1
+                
+                
+                
+                
+            #------------------------------------------------------------------------------#      
+            #Write summary components tab                                                  #
+            #------------------------------------------------------------------------------# 
+            
+            #@------#WRITE HEADERS#------@#
+            
+            headers_SCC=["Commodity 1","Total","Commodity 2/Type Conn","Totals","Check","Final"]
+            
+            startrow_SCC=1
+            start_column_SCC=1
+            
+            
+            for header in headers_SCC:
+                SCC.cell(row=startrow_SCC, column=start_column_SCC).value=header
+                SCC.cell(row=startrow_SCC, column=start_column_SCC).font = fontwhite
+                SCC.cell(row=startrow_SCC, column=start_column_SCC).fill=my_filldarkgray
+                start_column_SCC=start_column_SCC+1
+                
+            #@------#Merge works#------@#
+            #Clip clam
+            SCC.merge_cells(start_row=2, start_column=1, end_row=4, end_column=1)
+            SCC.merge_cells(start_row=2, start_column=2, end_row=4, end_column=2)
+            SCC.merge_cells(start_row=2, start_column=6, end_row=4, end_column=6)
+            SCC.merge_cells(start_row=2, start_column=5, end_row=4, end_column=5)
+            
+            #Connector
+            SCC.merge_cells(start_row=5, start_column=1, end_row=6, end_column=1)
+            SCC.merge_cells(start_row=5, start_column=2, end_row=6, end_column=2)
+            SCC.merge_cells(start_row=5, start_column=6, end_row=6, end_column=6)
+            SCC.merge_cells(start_row=5, start_column=5, end_row=6, end_column=5)
+            
+            #Grommet
+            SCC.merge_cells(start_row=7, start_column=1, end_row=8, end_column=1)
+            SCC.merge_cells(start_row=7, start_column=2, end_row=8, end_column=2)
+            SCC.merge_cells(start_row=7, start_column=6, end_row=8, end_column=6)
+            SCC.merge_cells(start_row=7, start_column=5, end_row=8, end_column=5)
+            
+            #Terminal
+            SCC.merge_cells(start_row=9, start_column=1, end_row=11, end_column=1)
+            SCC.merge_cells(start_row=9, start_column=2, end_row=11, end_column=2)
+            SCC.merge_cells(start_row=9, start_column=6, end_row=11, end_column=6)
+            SCC.merge_cells(start_row=9, start_column=5, end_row=11, end_column=5)
+            
+            #Conduit
+            SCC.merge_cells(start_row=12, start_column=1, end_row=13, end_column=1)
+            SCC.merge_cells(start_row=12, start_column=2, end_row=13, end_column=2)
+            SCC.merge_cells(start_row=12, start_column=6, end_row=13, end_column=6)
+            SCC.merge_cells(start_row=12, start_column=5, end_row=13, end_column=5)
+            
+            #Rigid Tube
+            SCC.merge_cells(start_row=14, start_column=1, end_row=15, end_column=1)
+            SCC.merge_cells(start_row=14, start_column=2, end_row=15, end_column=2)
+            SCC.merge_cells(start_row=14, start_column=6, end_row=15, end_column=6)
+            SCC.merge_cells(start_row=14, start_column=5, end_row=15, end_column=5)
+            
+            #@------#Write Info#------@#
+            groups=["Clip/Clamp","Connector","Grommet","Terminal","Conduit","Rigid Tube","Tie Strap",
+                    "Eyelet","Cover","Protector (Shield/Channel)","Heatshrink Splice","Wire Seal","Cavity Plug",
+                    "Bolt","Nut","Heatshrink Eyelet","Heatshrink","Sleeve","Foil Tape","Hank Tape","Label","Ribbon"]
+            
+            groups2=["Bracket","Tape on Clip","Snap on Clip","WP","NWP","Disc","Accordion","Terminal NWP","Terminal WP",
+                     "Terminal Fuse","Slit Tube","Unslit Tube","Slit Tube","Unslit Tube"]
+            
+            rows_to_write=[2,5,7,9,12,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+            
+            rows_to_write2=[2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+            
+            #column 1
+            for i in range(len(groups)):
+                SCC.cell(row=rows_to_write[i], column=1).value=groups[i]
+                SCC.cell(row=rows_to_write[i], column=2).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,A'''+str(rows_to_write[i])+''')'''
+                SCC.cell(row=rows_to_write[i], column=6).value='''=B'''+str(rows_to_write[i])
+                
+            for i in range(len(groups2)):
+                SCC.cell(row=rows_to_write2[i], column=3).value=groups2[i]
+                SCC.cell(row=rows_to_write2[i], column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!D3:D5000,'Summary Component count'!C'''+str(rows_to_write2[i])+''')'''
+
+            
+            
+                
+            
+    
                         
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
         
+        
+        #------------------------------------------------------------------------------#      
+        #Write summary components tab                                                  #
+        #------------------------------------------------------------------------------# 
+        
 
+    
         os.chdir(path_calculations_folder+"/"+directory_name)
-
         
         #------------------------------------------------------------------------------#      
         #Write data LMI                                                                #
