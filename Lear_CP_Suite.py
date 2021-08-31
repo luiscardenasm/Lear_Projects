@@ -4399,7 +4399,10 @@ def ODM():
             AN = book_bom.create_sheet("Assembly Nav costed",1)
             AN.title = "Assembly Nav costed"
             
-            NEN = book_bom.create_sheet("Netlist Extraction costed",3)
+            SCC = book_bom.create_sheet("Summary Component count",2)
+            SCC.title = "Summary Component count"
+            
+            NEN = book_bom.create_sheet("Netlist Extraction costed",4)
             NEN.title = "Netlist Extraction costed"
             
             ON = book_bom.create_sheet("Overstocks costed",7)
@@ -4869,7 +4872,7 @@ def ODM():
                         
                         if(columnainicial==2 and str(cell)[0:3]=="SCP"):
                             AN.cell(row=rowinicial, column=1).value=directory_name
-                            AN.cell(row=rowinicial, column=3).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE SEALED","Splice Sealed",IF(I'''+str(rowinicial)+'''="GENERIC SPLICE UNSEALED","Splice Unsealed","NOT FOUND"))'''
+                            AN.cell(row=rowinicial, column=3).value='''=IF(I'''+str(rowinicial)+'''="GENERIC SPLICE SEALED","Heatshrink Splice",IF(I'''+str(rowinicial)+'''="GENERIC SPLICE UNSEALED","Splice Unsealed","NOT FOUND"))'''
                             AN.cell(row=rowinicial, column=columnainicial).value="=VLOOKUP(J"+str(rowinicial)+",'Netlist Extraction costed'!A"+str(counterNEO_secondarytable_start_record)+":K"+str(counterNEO_secondarytable_end)+",11,0)"
                             AN.cell(row=rowinicial, column=6).value='=B'+str(rowinicial)
                             AN.cell(row=rowinicial, column=11).value="=VLOOKUP(J"+str(rowinicial)+",'Netlist Extraction costed'!A"+str(counterNEO_secondarytable_start_record)+":K"+str(counterNEO_secondarytable_end)+",5,0)"
@@ -4943,9 +4946,6 @@ def ODM():
                 AN.cell(row=rowinicial, column=15).value="FT"
                 rowinicial=rowinicial+1
                 
-                
-                
-                
             #------------------------------------------------------------------------------#      
             #Write summary components tab                                                  #
             #------------------------------------------------------------------------------# 
@@ -5003,10 +5003,10 @@ def ODM():
             
             #@------#Write Info#------@#
             groups=["Clip/Clamp","Connector","Grommet","Terminal","Conduit","Rigid Tube","Tie Strap",
-                    "Eyelet","Cover","Protector (Shield/Channel)","Heatshrink Splice","Wire Seal","Cavity Plug",
-                    "Bolt","Nut","Heatshrink Eyelet","Heatshrink","Sleeve","Foil Tape","Hank Tape","Label","Ribbon"]
+                    "Eyelet","Cover","Protector (Shield/Channel)","Heatshrink Splice","Heatshrink Bluntcut","Wire Seal","Cavity Plug",
+                    "Bolt","Nut","Heatshrink Eyelet","Sleeve","Foil Tape","Hank Tape","Label","Ribbon"]
             
-            groups2=["Bracket","Tape on Clip","Snap on Clip","WP","NWP","Disc","Accordion","Terminal NWP","Terminal WP",
+            groups2=["Bracket","Tape on Clip","Snap on Clip","WP","NWP","Disc","Accordion","NWP","WP",
                      "Terminal Fuse","Slit Tube","Unslit Tube","Slit Tube","Unslit Tube"]
             
             rows_to_write=[2,5,7,9,12,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
@@ -5022,13 +5022,33 @@ def ODM():
             for i in range(len(groups2)):
                 SCC.cell(row=rows_to_write2[i], column=3).value=groups2[i]
                 SCC.cell(row=rows_to_write2[i], column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!D3:D5000,'Summary Component count'!C'''+str(rows_to_write2[i])+''')'''
-
-            
-            
                 
+            #write formulas Column D
             
-    
-                        
+            SCC.cell(row=2, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C2)'''
+            SCC.cell(row=3, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C3)'''
+            SCC.cell(row=4, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C4)'''
+            SCC.cell(row=5, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A5:A5,'Assembly Nav costed'!E3:E5000,C5)'''
+            SCC.cell(row=6, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A5:A5,'Assembly Nav costed'!E3:E5000,C6)'''
+            SCC.cell(row=7, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A7,'Assembly Nav costed'!D3:D5000,C7)'''
+            SCC.cell(row=8, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A7,'Assembly Nav costed'!D3:D5000,C8)'''
+            SCC.cell(row=9, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A9,'Assembly Nav costed'!D3:D5000,C9)'''
+            SCC.cell(row=10, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A9,'Assembly Nav costed'!D3:D5000,C10)'''
+            SCC.cell(row=11, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A9,'Assembly Nav costed'!D3:D5000,C11)'''
+            SCC.cell(row=12, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A12,'Assembly Nav costed'!D3:D5000,C12)'''
+            SCC.cell(row=13, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A12,'Assembly Nav costed'!D3:D5000,C13)'''
+            SCC.cell(row=14, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A14,'Assembly Nav costed'!D3:D5000,C14)'''
+            SCC.cell(row=15, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A14,'Assembly Nav costed'!D3:D5000,C15)'''
+            
+            #write formulas Column E
+            
+            SCC.cell(row=2, column=5).value='''=B2=SUM(D2:D4)'''
+            SCC.cell(row=5, column=5).value='''=B5=SUM(D5:D6)'''
+            SCC.cell(row=7, column=5).value='''=A7=SUM(D7:D8)'''
+            SCC.cell(row=9, column=5).value='''=B9=SUM(D9:D11)'''
+            SCC.cell(row=12, column=5).value='''=B12=SUM(D12:D13)'''
+            SCC.cell(row=14, column=5).value='''=B14=SUM(D14:D15)'''
+
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
@@ -5052,6 +5072,7 @@ def ODM():
         #@------#Read old sheets#------@#
         LR=book_LMI["Labor Report"]
         SPL=book_LMI["Splicing"]
+        CWWL=book_LMI["Cut wires with length"]
 
         #@------#Get splices information#------@#
         list_splices=[]
@@ -5070,6 +5091,30 @@ def ODM():
         for key in splices_dict2:
             qty=splices_dict2.get(key)
             SPL.cell(row=int(key)+3, column=3).value=int(qty)
+            
+            
+        #@------#Direct component Data#------@#
+        #Clip/clamp Tape on Clip
+        LR.cell(row=113, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$3"""
+        #Clip/clamp snap on clip
+        LR.cell(row=94, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$4"""
+        #Connectors Final
+        LR.cell(row=102, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$5-SUM(K103:K104)"""
+        LR.cell(row=106, column=11).value="""=SUM(K102:K104)"""
+        #Terminal
+        LR.cell(row=131, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$9"""
+        LR.cell(row=132, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$10"""
+        #Tie Strap
+        LR.cell(row=110, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$16"""
+        #Heatshrink Splice
+        LR.cell(row=50, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$20"""
+        LR.cell(row=59, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$20"""
+        #Plugs
+        LR.cell(row=69, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$23"""
+        #Seals
+        CWWL.cell(row=16, column=7).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$22"""
+        #Label
+        LR.cell(row=135, column=11).value=1
         
         book_LMI.save(directory_name+"_LMI"+".xlsx")
     print("Terminado :D")
