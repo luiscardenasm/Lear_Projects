@@ -4789,9 +4789,7 @@ def ODM():
             
                 if(str(control)!="None"):
                     
-                    #Gauge
-                    
-                    #Hola
+
                 
                     cell_obj2 = HCO.cell(row=rowhco, column = 3)
                     gauge=float(cell_obj2.value)
@@ -5048,17 +5046,33 @@ def ODM():
             SCC.cell(row=9, column=5).value='''=B9=SUM(D9:D11)'''
             SCC.cell(row=12, column=5).value='''=B12=SUM(D12:D13)'''
             SCC.cell(row=14, column=5).value='''=B14=SUM(D14:D15)'''
+            
+            #@------#Write Wires part of table#------@#
+            
+            SCC.merge_cells(start_row=32, start_column=1, end_row=len(list_wires)+31, end_column=1)
+            SCC.cell(row=32, column=1).value="Wire"
+            
+            SCC.merge_cells(start_row=32, start_column=2, end_row=len(list_wires)+31, end_column=2)
+            SCC.cell(row=32, column=2).value="""=SUMIF('Assembly Nav costed'!C3:C5000,"Wire",'Assembly Nav costed'!N3:N5000)"""
+            
+            SCC.merge_cells(start_row=32, start_column=5, end_row=len(list_wires)+31, end_column=5)
+            SCC.cell(row=32, column=5).value='''=SUM(D32:D'''+str(len(list_wires)+31)+''')=B32'''
+            
+            SCC.merge_cells(start_row=32, start_column=6, end_row=len(list_wires)+31, end_column=6)
+            
+            start_row_wire=32
+            for wire in list_wires:
+                SCC.cell(row=start_row_wire, column=3).value=str(wire)
+                SCC.cell(row=start_row_wire, column=4).value="""=SUMIF('Assembly Nav costed'!$B$3:$B$5000,'Summary Component count'!C"""+str(start_row_wire)+""",'Assembly Nav costed'!$N$3:$N$5000)"""
+                start_row_wire=start_row_wire+1
 
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
         
-        
         #------------------------------------------------------------------------------#      
         #Write summary components tab                                                  #
         #------------------------------------------------------------------------------# 
-        
-
     
         os.chdir(path_calculations_folder+"/"+directory_name)
         
@@ -5068,11 +5082,12 @@ def ODM():
         
         book_LMI = openpyxl.load_workbook(directory_name+"_LMI"+".xlsx")
             
-
         #@------#Read old sheets#------@#
         LR=book_LMI["Labor Report"]
         SPL=book_LMI["Splicing"]
         CWWL=book_LMI["Cut wires with length"]
+        SO=book_LMI["Special Operations"]
+        
 
         #@------#Get splices information#------@#
         list_splices=[]
@@ -5108,11 +5123,11 @@ def ODM():
         LR.cell(row=110, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$16"""
         #Heatshrink Splice
         LR.cell(row=50, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$20"""
-        LR.cell(row=59, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$20"""
         #Plugs
         LR.cell(row=69, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$23"""
         #Seals
         CWWL.cell(row=16, column=7).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$22"""
+        SO.cell(row=79, column=6).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$F$22"""
         #Label
         LR.cell(row=135, column=11).value=1
         
