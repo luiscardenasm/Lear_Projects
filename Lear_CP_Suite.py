@@ -4884,7 +4884,7 @@ def ODM():
                     
                         if(columnainicial==2 and str(cell)[0:3]!="SCP"):
                             AN.cell(row=rowinicial, column=1).value=directory_name
-                            AN.cell(row=rowinicial, column=3).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$G$356,7,0)"
+                            AN.cell(row=rowinicial, column=3).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$G$5000,7,0)"
                             AN.cell(row=rowinicial, column=5).value='''=IF(ISERROR(VLOOKUP(J'''+str(rowinicial)+''','Netlist Extraction costed'!$A$'''+str(counterNEO_secondarytable_start_record)+''':$G$'''+str(counterNEO_secondarytable_end)+''',7,0)=TRUE),"",IF(VLOOKUP(J'''+str(rowinicial)+''','Netlist Extraction costed'!$A$'''+str(counterNEO_secondarytable_start_record)+''':$G$'''+str(counterNEO_secondarytable_end)+''',7,0)="SLD","WP",IF(VLOOKUP(J'''+str(rowinicial)+''','Netlist Extraction costed'!$A$'''+str(counterNEO_secondarytable_start_record)+''':$G$'''+str(counterNEO_secondarytable_end)+''',7,0)="UNSLD","NWP","")))'''
                             AN.cell(row=rowinicial, column=6).value="=VLOOKUP(B"+str(rowinicial)+","+"'"+str(path_TI)+"\[master.xlsx]master'!$A$1:$F$356,2,0)"
                             AN.cell(row=rowinicial, column=8).value='''=IF(COUNT(FIND({0,1,2,3,4,5,6,7,8,9},MID(K'''+str(rowinicial)+''',MATCH(2,1/(MID(K'''+str(rowinicial)+''',_xlfn.SEQUENCE(LEN(K'''+str(rowinicial)+''')),1)=","))+1,LEN(K'''+str(rowinicial)+'''))))>0,MID(K'''+str(rowinicial)+''',MATCH(2,1/(MID(K'''+str(rowinicial)+''',_xlfn.SEQUENCE(LEN(K'''+str(rowinicial)+''')),1)=","))+1,LEN(K'''+str(rowinicial)+''')),"")'''
@@ -5042,7 +5042,7 @@ def ODM():
             
             SCC.cell(row=2, column=5).value='''=B2=SUM(D2:D4)'''
             SCC.cell(row=5, column=5).value='''=B5=SUM(D5:D6)'''
-            SCC.cell(row=7, column=5).value='''=A7=SUM(D7:D8)'''
+            SCC.cell(row=7, column=5).value='''=B7=SUM(D7:D8)'''
             SCC.cell(row=9, column=5).value='''=B9=SUM(D9:D11)'''
             SCC.cell(row=12, column=5).value='''=B12=SUM(D12:D13)'''
             SCC.cell(row=14, column=5).value='''=B14=SUM(D14:D15)'''
@@ -5192,6 +5192,11 @@ def ODM2():
     
     for element in range(len(list_components)):
         MS.cell(row=element+1, column=1).value=list_components[element]
+        MS.cell(row=element+1, column=2).value="""=_xlfn.XLOOKUP(A"""+str(element+1)+""",'"""+str(path2)+"""\[slave1.xls]Innovator'!$D$2:$D$5000,'"""+str(path2)+"""\[slave1.xls]Innovator'!$A$2:$A$5000)"""
+        MS.cell(row=element+1, column=3).value="""=VLOOKUP(B"""+str(element+1)+""",'"""+str(path2)+"""\[slave2.xls]Innovator'!$A$2:$P$5000,3,0)"""
+        MS.cell(row=element+1, column=4).value="""=VLOOKUP(B"""+str(element+1)+""",'"""+str(path2)+"""\[slave2.xls]Innovator'!$A$2:$P$5000,4,0)"""
+        MS.cell(row=element+1, column=5).value="""=VLOOKUP(B"""+str(element+1)+""",'"""+str(path2)+"""\[slave2.xls]Innovator'!$A$2:$P$5000,12,0)"""
+        MS.cell(row=element+1, column=6).value="""=VLOOKUP(B"""+str(element+1)+""",'"""+str(path2)+"""\[slave2.xls]Innovator'!$A$2:$P$5000,16,0)"""
     mw.save("master.xlsx")
     
 def OpenUrl():
