@@ -2235,7 +2235,7 @@ def Button_Comparer_V2():
                 row=row+1
                 counter=counter+1
             
-            conditional=value[0]
+
     
             
             minidict = dict(zip(lista_pn, lista_quants))
@@ -4470,7 +4470,9 @@ def ODM():
             
             twist_names=[]
             wyre_type=[]
-            #wyre_length=[]
+            Cable_id=[]
+            Shield_Grp=[]
+            wyre_length=[]
             
             for valor in listaHNNEO:
                 if(str(valor)==requested):
@@ -4492,10 +4494,16 @@ def ODM():
                             #@------#get information for shield and twist table#------@#
                             #if(columna==12):
                                 #wyre_length.append(temp_container[columna-1])
+                            if(columna==12):
+                                wyre_length.append(temp_container[columna-1])
                             if(columna==14):
                                 wyre_type.append(temp_container[columna-1])
+                            if(columna==23):
+                                Cable_id.append(temp_container[columna-1])
                             if(columna==24):
                                 twist_names.append(temp_container[columna-1])
+                            if(columna==25):
+                                Shield_Grp.append(temp_container[columna-1])
 
     
                             
@@ -4506,8 +4514,12 @@ def ODM():
                             if(columna==6 or columna==9 ):
                                 list_from_to_term.append(temp_container[columna-1])
                         else:
+                            if(columna==23):
+                                Cable_id.append(temp_container[columna-1])
                             if(columna==24):
                                 twist_names.append(temp_container[columna-1])
+                            if(columna==25):
+                                Shield_Grp.append(temp_container[columna-1])
                                 
                     counterNEO=counterNEO+1
                     rowinicial2=rowinicial2+1 
@@ -4515,6 +4527,59 @@ def ODM():
                     
             counterNEO=counterNEO+1
             
+
+
+            
+            #@------#compute unique twist pairs#------@#
+            list_twist_information=[]
+            list_twist_filtered=[]
+            twist_names_list=[]
+            twist_names_list_unique=[]
+            dict_twist={}
+            for data in range(len(wyre_length)):
+                              temp_list=[]
+                              temp_list.append(wyre_length[data])
+                              temp_list.append(wyre_type[data])
+                              temp_list.append(Cable_id[data])
+                              temp_list.append(twist_names[data])
+                              temp_list.append(Shield_Grp[data])
+                              list_twist_information.append(temp_list)
+            
+            list_assembly_wire_type=["Airbag","A2B","Coax","Ethernet","USB","R2PP","LVDS"]
+            
+            for element in list_twist_information:
+
+                assemblywire_test=any(wiretype.casefold() in str(element[1]).casefold() for wiretype in list_assembly_wire_type)
+
+                if(assemblywire_test==False and str(element[2])=="None" and str(element[4])=="None" and str(element[3])!="None"):
+                    list_twist_filtered.append(element)
+                    twist_names_list.append(element[3])
+            
+
+            twist_names_list_unique=twist_names_list
+            twist_names_list_unique = list(dict.fromkeys(twist_names_list_unique))
+            
+            for element in twist_names_list_unique:
+                value=twist_names_list.count(element)
+                dict_twist[element] = [value]
+            #dict_twist = {i:twist_names_list.count(i) for i in twist_names_list}
+            
+        
+            for key in dict_twist:
+
+                list_temp=[]
+                for element in list_twist_filtered:
+
+                    if(str(key)==str(element[3])):
+                        list_temp.append(float(element[0]))
+                result = all(element == list_temp[0] for element in list_temp)
+                if (result):
+                    dict_twist[str(key)].append(list_temp[0])
+            print(dict_twist)
+                    
+            
+        
+
             #@------#remove duplicated values from list#------@#
             number_rows=len(list_from_to_conn)/2
             
@@ -4529,7 +4594,7 @@ def ODM():
             list_from_to_term.append("Sn")
             list_from_to_term.sort()
 
-            print(list_from_to_term)
+
             
             #@------#write headers in new netlist#------@#
             list_of_headers=["Schematic Sub-System", "Schematic Wire Handle","Circuit #","From Conn",
@@ -4635,10 +4700,34 @@ def ODM():
                 start_row_termtype=start_row_termtype+2
                 start_column_termtype_formula=start_column_termtype_formula+1
             
+            #@------#Write pure twist table#------@#
+            start_row_twist=start_row_termtype+1
             
-            list_not_accepted_cables=["A2B","COAX","Ethernet","USB","LVDS","R2PP-E1","Pretensioner","Knee"]
-            
-                            
+            if(len(twist_names_list)>0):
+                #Headers#
+                NEN.cell(row=start_row_twist, column=1).value="Twist (solo)"
+                NEN.cell(row=start_row_twist, column=1).font = fontwhite
+                NEN.cell(row=start_row_twist, column=1).fill=my_filldarkgray
+                
+                NEN.cell(row=start_row_twist, column=2).value="Number of wires"
+                NEN.cell(row=start_row_twist, column=2).font = fontwhite
+                NEN.cell(row=start_row_twist, column=2).fill=my_filldarkgray
+                
+                NEN.cell(row=start_row_twist, column=3).value="Length"
+                NEN.cell(row=start_row_twist, column=3).font = fontwhite
+                NEN.cell(row=start_row_twist, column=3).fill=my_filldarkgray
+                
+                start_row_twist=start_row_twist+1
+                
+                for key in dict_twist:
+                    NEN.cell(row=start_row_twist, column=1).value=str(key)
+                    contents=dict_twist.get(key)
+                    NEN.cell(row=start_row_twist, column=2).value=int(contents[0])
+                    NEN.cell(row=start_row_twist, column=3).value=float(contents[1])
+                    start_row_twist=start_row_twist+1
+                    
+                
+        
             #------------------------------------------------------------------------------#      
             #Read Overstocks original                                                      #
             #------------------------------------------------------------------------------# 
