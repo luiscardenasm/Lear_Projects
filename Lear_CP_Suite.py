@@ -3683,11 +3683,9 @@ def BOM_CUTSHEET_PREPARATION():
             ic_boom=ic_boom+1
         book_bom.save(new_bom)
         
-    
     ###################################################################################################################
     ##################Rewrite UOM value- Rewrite UOM value- Rewrite UOM Value - Rewr###################################
     ###################################################################################################################
-    
         ir_boom=9
         ic_boom=1
     
@@ -3714,7 +3712,6 @@ def BOM_CUTSHEET_PREPARATION():
     ##################Copy Detail sheet-Copy Detail sheet-Copy Detail sheet-Copy Det###################################
     ##################change name of worksheet-change name of worksheet-change name ###################################
     ###################################################################################################################
-    
         book_bom.copy_worksheet(BS)
         book_bom.save(new_bom)
             
@@ -3726,7 +3723,6 @@ def BOM_CUTSHEET_PREPARATION():
     ###################################################################################################################
     ##################Insert formulas titles bottom module matrix table-###############################################
     ###################################################################################################################
-    
         titles_to_insert=["Each","Per Length","Total","Validation","Total"]
         
         ir_boom=number_of_rows_bom+12
@@ -3736,7 +3732,6 @@ def BOM_CUTSHEET_PREPARATION():
         book_bom.save(new_bom)
         
     #Each-Each-Each-Each-Each-Each-Each-----------------------------------------------------------
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+13
         
@@ -3750,7 +3745,6 @@ def BOM_CUTSHEET_PREPARATION():
         book_bom.save(new_bom)
         
     #Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total----------------------------------------------
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+14
         
@@ -3758,49 +3752,38 @@ def BOM_CUTSHEET_PREPARATION():
             print(startrow)
             print(start_column)
             BS.cell(row=startrow, column=start_column).value="=SUM("+str(get_column_letter(start_column))+"11:"+str(get_column_letter(start_column))+str(10+number_of_rows_bom)+")"
-            
             start_column=start_column+1
-    
         book_bom.save(new_bom)
     
     #Per Length-Per Length-Per Length-Per Length-Per Length---------------------------------------------
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+12
-        
         for module in list_of_modules:
             print(startrow)
             print(start_column)
             BS.cell(row=startrow, column=start_column).value="=SUMIFS("+str(get_column_letter(start_column))+"11:"+str(get_column_letter(start_column))+str(10+number_of_rows_bom)+",$I$11:$I$"+str(10+number_of_rows_bom)+",$I$"+str(12+number_of_rows_bom)+")"
             print("=SUMIFS("+str(get_column_letter(start_column))+"11:"+str(get_column_letter(start_column))+str(10+number_of_rows_bom)+",$I$11:$I$"+str(10+number_of_rows_bom)+",$I$"+str(12+number_of_rows_bom)+")")
             start_column=start_column+1
-    
         book_bom.save(new_bom)
         
     #Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+15
-        
         for module in list_of_modules:
             print(startrow)
             print(start_column)
             BS.cell(row=startrow, column=start_column).value="=("+str(get_column_letter(start_column))+str(number_of_rows_bom+12)+"+"+str(get_column_letter(start_column))+str(number_of_rows_bom+13)+")-"+str(get_column_letter(start_column))+str(number_of_rows_bom+14)
             start_column=start_column+1
-    
         book_bom.save(new_bom)
         
     #Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total-Total
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+16
-        
         for module in list_of_modules:
             print(startrow)
             print(start_column)
             BS.cell(row=startrow, column=start_column).value="="+str(get_column_letter(start_column))+str(number_of_rows_bom+12)+"+("+str(get_column_letter(start_column))+str(number_of_rows_bom+13)+"/"+"1000)"
             start_column=start_column+1
-    
         book_bom.save(new_bom)
         
     #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -3808,15 +3791,12 @@ def BOM_CUTSHEET_PREPARATION():
     ##################SHEET(CONV)-SHEET(CONV)-SHEET(CONV)-SHEET(CONV)-#################################################@ 
     ###################################################################################################################@   
     #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
-    
         BSC=book_bom["Detail(Conv)"]
     
     ###################################################################################################################
     ##################Insert formulas titles bottom module matrix table-###############################################
     ###################################################################################################################
-    
         titles_to_insert=["Total","Validation"]
-        
         ir_boom=number_of_rows_bom+12
         for title in titles_to_insert:
             BSC.cell(row=ir_boom, column=uom_column).value=title
@@ -3827,26 +3807,17 @@ def BOM_CUTSHEET_PREPARATION():
     
         start_column=uom_column+1
         startrow=number_of_rows_bom+12
-        
         for module in list_of_modules:
-    
             BSC.cell(row=startrow, column=start_column).value="=SUM("+str(get_column_letter(start_column))+"11:"+str(get_column_letter(start_column))+str(10+number_of_rows_bom)+")"
-    
             start_column=start_column+1
-    
         book_bom.save(new_bom)
         
     #Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation-Validation
-    
         start_column=uom_column+1
         startrow=number_of_rows_bom+13
-        
         for module in list_of_modules:
-    
             BSC.cell(row=startrow, column=start_column).value="="+str(get_column_letter(start_column))+str(12+number_of_rows_bom)+"-Detail!"+str(get_column_letter(start_column))+str(16+number_of_rows_bom)
-    
             start_column=start_column+1
-    
         book_bom.save(new_bom)
         
     ###################################################################################################################
@@ -4703,7 +4674,7 @@ def ODM():
             #@------#Write pure twist table#------@#
             start_row_twist=start_row_termtype+1
             
-            if(len(twist_names_list)>0):
+            if(len(twist_names_list)>0): 
                 #Headers#
                 NEN.cell(row=start_row_twist, column=1).value="Twist (solo)"
                 NEN.cell(row=start_row_twist, column=1).font = fontwhite
@@ -4777,7 +4748,6 @@ def ODM():
                     rowinicial=rowinicial+1
                 
             #@------#add columns on overstocks costed#------@#
-            
             ON.insert_cols(3)
             ON.insert_cols(5)
             ON.insert_cols(27)    
@@ -4826,14 +4796,12 @@ def ODM():
             
             
             #@------#ADD headers (most right)#------@#
-            
             ON.cell(row=3, column=43).value="charge by row [1 tube or sleeve][2 longitudinal tape]"
             ON.cell(row=3, column=44).value="[spot tape usage][longitudinal tape & tube]"
             ON.cell(row=3, column=45).value="Charge by row [1 by reverse tape]"
             ON.cell(row=3, column=46).value="Charge by row [1 by longitudinal tape]"
             
             #@------#ADD special apperance added columns#------@#
-            
             ON.cell(row=4, column=3).font = fontbolnormal
             ON.cell(row=4, column=3).fill=my_filllightgray
             
@@ -4864,7 +4832,6 @@ def ODM():
             #print(control_number_column_HC)
             
             #@------#get number of rows down of requested and write formulas#------@#
-            
             control="start"
             rowhco=control_number_column_HC+1
             rowhcoh=control_number_column_HC
@@ -4877,8 +4844,6 @@ def ODM():
                 control=str(cell_obj.value)
             
                 if(str(control)!="None"):
-                    
-
                 
                     cell_obj2 = HCO.cell(row=rowhco, column = 3)
                     gauge=float(cell_obj2.value)
@@ -4947,7 +4912,6 @@ def ODM():
                 AN.cell(row=2, column=1+columna).fill=my_filllightgray
                 
             #@------#Write columns data from original Assembly Nav#------@#
-            
             columns_to_write=[2,9,10,13,14,15]
             counter2=0
             for lista in lists_to_fill:
@@ -4987,7 +4951,6 @@ def ODM():
                     counter3=counter3+1
                 counter2=counter2+1
             #@------#Write columns data [TERMINALS, SEALS & PLUGS] from original Assembly Nav#------@#  
-            
             for component in list_seals_plugs_terminals:
                 AN.cell(row=rowinicial, column=1).value=directory_name
                 AN.cell(row=rowinicial, column=2).value=component
@@ -5002,7 +4965,6 @@ def ODM():
                 rowinicial=rowinicial+1
                 
             #@------#Write columns data [Wires] from original Assembly Nav#------@#  
-            
             for wire in list_wires:
                 AN.cell(row=rowinicial, column=1).value=directory_name
                 AN.cell(row=rowinicial, column=2).value=str(wire)
@@ -5011,14 +4973,12 @@ def ODM():
                 AN.cell(row=rowinicial, column=9).value=str(wire)
                 AN.cell(row=rowinicial, column=14).value='''=VLOOKUP(B'''+str(rowinicial)+''','Harness Calculation'!P'''+str(list_rows[0])+''':R'''+str(list_rows[-1])+''',3,0)'''
                 AN.cell(row=rowinicial, column=15).value="FT"
-                
+    
                 rowinicial=rowinicial+1
                 
             #@------#Write columns data [Overstocks] from original Assembly Nav#------@#
-                
             list_overstocks = list(dict.fromkeys(list_overstocks))
             list_overstocks.sort()
-            
             for element in list_overstocks:
                 element_name=element.split("_", 2)[0]
                 element_name2=element.split("_", 2)[1]
@@ -5038,9 +4998,7 @@ def ODM():
             #------------------------------------------------------------------------------# 
             
             #@------#WRITE HEADERS#------@#
-            
             headers_SCC=["Commodity 1","Total","Commodity 2/Type Conn","Totals","Check","Final"]
-            
             startrow_SCC=1
             start_column_SCC=1
             
@@ -5092,12 +5050,9 @@ def ODM():
             groups=["Clip/Clamp","Connector","Grommet","Terminal","Conduit","Rigid Tube","Tie Strap",
                     "Eyelet","Cover","Protector (Shield/Channel)","Heatshrink Splice","Heatshrink Bluntcut","Wire Seal","Cavity Plug",
                     "Bolt","Nut","Heatshrink Eyelet","Sleeve","Foil Tape","Hank Tape","Label","Ribbon"]
-            
             groups2=["Bracket","Tape on Clip","Snap on Clip","WP","NWP","Disc","Accordion","NWP","WP",
                      "Terminal Fuse","Slit Tube","Unslit Tube","Slit Tube","Unslit Tube"]
-            
             rows_to_write=[2,5,7,9,12,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-            
             rows_to_write2=[2,3,4,5,6,7,8,9,10,11,12,13,14,15]
             
             #column 1
@@ -5111,7 +5066,6 @@ def ODM():
                 SCC.cell(row=rows_to_write2[i], column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!D3:D5000,'Summary Component count'!C'''+str(rows_to_write2[i])+''')'''
                 
             #write formulas Column D
-            
             SCC.cell(row=2, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C2)'''
             SCC.cell(row=3, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C3)'''
             SCC.cell(row=4, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A2,'Assembly Nav costed'!D3:D5000,C4)'''
@@ -5128,7 +5082,6 @@ def ODM():
             SCC.cell(row=15, column=4).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,'Summary Component count'!A14,'Assembly Nav costed'!D3:D5000,C15)'''
             
             #write formulas Column E
-            
             SCC.cell(row=2, column=5).value='''=B2=SUM(D2:D4)'''
             SCC.cell(row=5, column=5).value='''=B5=SUM(D5:D6)'''
             SCC.cell(row=7, column=5).value='''=B7=SUM(D7:D8)'''
@@ -5137,7 +5090,6 @@ def ODM():
             SCC.cell(row=14, column=5).value='''=B14=SUM(D14:D15)'''
             
             #@------#Write Wires part of table#------@#
-            
             SCC.merge_cells(start_row=32, start_column=1, end_row=len(list_wires)+31, end_column=1)
             SCC.cell(row=32, column=1).value="Wire"
             
@@ -5176,7 +5128,15 @@ def ODM():
         SPL=book_LMI["Splicing"]
         CWWL=book_LMI["Cut wires with length"]
         SO=book_LMI["Special Operations"]
+        TW=book_LMI["Twisting"]
         
+        #@------#Write twist Info#------@#
+        start_row_twist_sheet=10
+        for key in dict_twist:
+            values=dict_twist.get(key)
+            TW.cell(row=start_row_twist_sheet, column=2).value=int(values[0])
+            TW.cell(row=start_row_twist_sheet, column=3).value=float(values[1]/1000)
+            start_row_twist_sheet=start_row_twist_sheet+1
 
         #@------#Get splices information#------@#
         list_splices=[]
@@ -5228,24 +5188,16 @@ def ODM2():
     #------------------------------------------------------------------------------#      
     #Select program folder and get paths of calculations and Technical Information #
     #------------------------------------------------------------------------------# 
-    
-    
     pyautogui.alert(text='Select technical information files', title='Select File', button='OK')
-    
     path2 = askdirectory(title='Select Folder') # shows dialog box and return the path
     
     #print(path2)
-    
     list_of_directories=os.listdir(path2)
-    
     os.chdir(path2)
     list_components=[]
     print(list_of_directories)
-    
     for file in list_of_directories:
-        
         book_bom = openpyxl.load_workbook(file)
-            
         print(file)
         
         #@------#Read old sheets#------@#
