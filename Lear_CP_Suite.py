@@ -4504,6 +4504,7 @@ def ODM():
             #@------#compute unique twist pairs#------@#
             list_twist_information=[]
             list_twist_filtered=[]
+            wire_list_no_assy=[]
             twist_names_list=[]
             twist_names_list_unique=[]
             dict_twist={}
@@ -4525,6 +4526,9 @@ def ODM():
                 if(assemblywire_test==False and str(element[2])=="None" and str(element[4])=="None" and str(element[3])!="None"):
                     list_twist_filtered.append(element)
                     twist_names_list.append(element[3])
+                    
+                if(assemblywire_test==False):
+                    wire_list_no_assy.append(element)
             
 
             twist_names_list_unique=twist_names_list
@@ -4533,9 +4537,7 @@ def ODM():
             for element in twist_names_list_unique:
                 value=twist_names_list.count(element)
                 dict_twist[element] = [value]
-            #dict_twist = {i:twist_names_list.count(i) for i in twist_names_list}
-            
-        
+   
             for key in dict_twist:
 
                 list_temp=[]
@@ -4546,11 +4548,8 @@ def ODM():
                 result = all(element == list_temp[0] for element in list_temp)
                 if (result):
                     dict_twist[str(key)].append(list_temp[0])
-            print(dict_twist)
-                    
-            
-        
 
+                
             #@------#remove duplicated values from list#------@#
             number_rows=len(list_from_to_conn)/2
             
@@ -5155,6 +5154,16 @@ def ODM():
         for key in splices_dict2:
             qty=splices_dict2.get(key)
             SPL.cell(row=int(key)+3, column=3).value=int(qty)
+            
+        #@------#Write cut wire information#------@#
+        
+        print(len(wire_list_no_assy))   
+        start_row_cwwl=27
+        for element in wire_list_no_assy:
+            CWWL.cell(row=start_row_cwwl, column=3).value=1
+            CWWL.cell(row=start_row_cwwl, column=4).value=float(element[0])
+            start_row_cwwl=start_row_cwwl+1
+        
             
             
         #@------#Direct component Data#------@#
