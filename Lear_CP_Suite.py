@@ -339,7 +339,7 @@ def Button_XML_Circuitry():
     for col in HC.columns:
         print("columnas")
         max_length = 0
-        column = col[0].column # Get the column name
+        #column = col[0].column # Get the column name
         for cell in col:
             try: # Necessary to avoid error on empty cells
                 if len(cell.value) > max_length:
@@ -572,7 +572,7 @@ def Button_XML_BOM():
         for col in HC.columns:
             print("columnas")
             max_length = 0
-            column = col[0].column # Get the column name
+            #column = col[0].column # Get the column name
             for cell in col:
                 try: # Necessary to avoid error on empty cells
                     if len(str(cell.value)) > max_length:
@@ -680,7 +680,7 @@ def Button_XML_BOM():
         for col in HC2.columns:
             print("columnas")
             max_length = 0
-            column = col[0].column # Get the column name
+            #column = col[0].column # Get the column name
             for cell in col:
                 try: # Necessary to avoid error on empty cells
                     if len(str(cell.value)) > max_length:
@@ -919,7 +919,7 @@ def Button_PDF_Multiple():
 
     for col in HC.columns:
         max_length = 0
-        column = col[0].column # Get the column name
+        #column = col[0].column # Get the column name
         for cell in col:
             try: # Necessary to avoid error on empty cells
                 if len(str(cell.value)) > max_length:
@@ -1141,7 +1141,7 @@ def Button_PDF_onefile():
 
     for col in HC.columns:
         max_length = 0
-        column = col[0].column # Get the column name
+        #column = col[0].column # Get the column name
         for cell in col:
             try: # Necessary to avoid error on empty cells
                 if len(str(cell.value)) > max_length:
@@ -1839,16 +1839,7 @@ def Button_Comparer_V2():
     underline='none',
     strike=False,
     color='000000')
-    
-    fontbolnormal = Font(name='Calibri',
-    size=11,
-    bold=True,
-    italic=False,
-    vertAlign=None,
-    underline='none',
-    strike=False,
-    color='000000')
-    
+        
     my_green = openpyxl.styles.colors.Color(rgb='a8f0bc')
     my_fillgreen = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_green)
     
@@ -1892,8 +1883,8 @@ def Button_Comparer_V2():
     my_darkred = openpyxl.styles.colors.Color(rgb='82000b')
     my_filldarkred = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkred)
     
-    my_orange = openpyxl.styles.colors.Color(rgb='ffac38')
-    my_fillorange = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_orange)
+    #my_orange = openpyxl.styles.colors.Color(rgb='ffac38')
+    #my_fillorange = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_orange)
     
     my_yellow = openpyxl.styles.colors.Color(rgb='fff3c2')
     my_fillyellow = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_yellow)
@@ -1975,7 +1966,7 @@ def Button_Comparer_V2():
     
     #Read Modules-------------------------------------------------------------------------------------   
     
-    conditional="A"
+    #conditional="A"
     columnainicial=13
     modules_old=[]
     
@@ -2038,7 +2029,7 @@ def Button_Comparer_V2():
                           
             counter=0
                     
-            conditional=value[0]
+            #conditional=value[0]
                     
             for item in EPN_old:
                 cell_obj2 = HL.cell(row = row, column = columnainicial)
@@ -2064,7 +2055,7 @@ def Button_Comparer_V2():
                 row=row+1
                 counter=counter+1
             
-            conditional=value[0]
+            #conditional=value[0]
     
             
             minidict = dict(zip(lista_pn, lista_quants))
@@ -2151,7 +2142,7 @@ def Button_Comparer_V2():
     
      #Read Modules-------------------------------------------------------------------------------------   
     
-    conditional="A"
+    #conditional="A"
     columnainicial=13
     modules_new=[]
     lista_diccionarios=[]
@@ -2207,7 +2198,7 @@ def Button_Comparer_V2():
                 value_family=str(cell_obj_family.value)
             lista_diccionarios_family.append(value_family)
             counter=0
-            conditional=value[0]
+            #conditional=value[0]
         
             for item in EPN_new:
                 cell_obj2 = HL.cell(row = row, column = columnainicial)
@@ -3531,19 +3522,6 @@ def Button_Comparer_V2():
     
 def BOM_CUTSHEET_PREPARATION():
     
-    my_grayf = openpyxl.styles.colors.Color(rgb='00000080')
-    my_fillgray = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_grayf)
-    
-    font7 = Font(name='Calibri',
-    size=8,
-    bold=True,
-    italic=True,
-    vertAlign=None,
-    underline='none',
-    strike=False,
-    color='FFFFFF')
-    number_format = 'Accounting'
-    
     pyautogui.alert(text='Select PDF File', title='Select File', button='OK')
     
     path2 = askdirectory(title='Select Folder') # shows dialog box and return the path
@@ -4194,11 +4172,11 @@ def ODM():
     for folder in list_of_directories:
         print(str(folder))
         if ("Calculation" in str(folder)):
-            calculation_folder=str(folder)
+            #calculation_folder=str(folder)
             path_calculations_folder=path2+"/"+folder
             
         if ("Technical" in str(folder)):
-            TI_folder=str(folder)
+            #TI_folder=str(folder)
             path_TI=path2+"/"+folder
             
     ####################      
@@ -4224,7 +4202,6 @@ def ODM():
     for folder in list_of_directories:
         #print(str(folder))
         if ("Tracking" in str(folder)):
-            tracking_folder=str(folder)
             path_tracking_folder=path_calculations_folder+"/"+folder
             
     #print(tracking_folder)
@@ -4716,9 +4693,7 @@ def ODM():
                 if(requested==value):
                     break
                 
-            #print("CONTROL NUMBER COLUMN OVERSTOCKS!!!!!!!")
-            #print(control_number_column_OS)
-            
+
             control_list_oo=[]
             rowinicial=4
             for row in range(number_of_rows_OO-3):
@@ -4745,6 +4720,8 @@ def ODM():
                             ON.cell(row=rowinicial+1, column=columna).value=temp_container[columna-1]
 
                     rowinicial=rowinicial+1
+                    
+            ovstck_size_rows=rowinicial
                 
             #@------#add columns on overstocks costed#------@#
             ON.insert_cols(3)
@@ -4767,8 +4744,6 @@ def ODM():
                 value=str(cell_obj.value)
                 temp_container.append(value)
                 
-            
-            
             for columna in range(len(columns_to_read_oo)+3):
                         if(str(temp_container[columna-1])!="None"):
                             ON.cell(row=4, column=columna+1).value=temp_container[columna]
@@ -4776,10 +4751,28 @@ def ODM():
                             ON.cell(row=4, column=columna+1).fill=my_filldarkgray
                             
             #@------#ADD headers (secondary headers) to overstocks costed worksheet#------@#
+            
+            #Requested Column
+            ON.cell(row=4, column=len(columns_to_read_oo)+4).value=str(requested)
+            ON.cell(row=4, column=len(columns_to_read_oo)+4).font = fontbolnormal
+            
+            start_row_ovstck_requested=5
+            for row in range(ovstck_size_rows-4):
+                ON.cell(row=start_row_ovstck_requested, column=len(columns_to_read_oo)+4).value="X"
+                start_row_ovstck_requested=start_row_ovstck_requested+1
+                
+                
+            #add calculation data
+            ON.cell(row=1, column=len(columns_to_read_oo)+5).value="Spiral"
+            ON.cell(row=1, column=len(columns_to_read_oo)+6).value=4.89
+            ON.cell(row=2, column=len(columns_to_read_oo)+5).value="Overlap"
+            ON.cell(row=2, column=len(columns_to_read_oo)+6).value=9.06
+            ON.cell(row=3, column=len(columns_to_read_oo)+6).value=304.8
+        
             secondary_headers_overstocks=["Lineal  Length Tape (M)","Usage FT","Length Tube MT","PN Conduit/Sleeve/Tape",
                                           "Tube Spot Tape-Type","Tube Spot Tape-Qty","Tube Spot Tape-Usage","Cut tape with knife","Cut @ specific length"]
             
-            column_start_vstck=len(columns_to_read_oo)+4
+            column_start_vstck=len(columns_to_read_oo)+5
             
             for secheader in secondary_headers_overstocks:
                 ON.cell(row=4, column=column_start_vstck).value=str(secheader)
@@ -4795,10 +4788,10 @@ def ODM():
             
             
             #@------#ADD headers (most right)#------@#
-            ON.cell(row=3, column=43).value="charge by row [1 tube or sleeve][2 longitudinal tape]"
-            ON.cell(row=3, column=44).value="[spot tape usage][longitudinal tape & tube]"
-            ON.cell(row=3, column=45).value="Charge by row [1 by reverse tape]"
-            ON.cell(row=3, column=46).value="Charge by row [1 by longitudinal tape]"
+            ON.cell(row=3, column=44).value="charge by row [1 tube or sleeve][2 longitudinal tape]"
+            ON.cell(row=3, column=45).value="[spot tape usage][longitudinal tape & tube]"
+            ON.cell(row=3, column=46).value="Charge by row [1 by reverse tape]"
+            ON.cell(row=3, column=47).value="Charge by row [1 by longitudinal tape]"
             
             #@------#ADD special apperance added columns#------@#
             ON.cell(row=4, column=3).font = fontbolnormal
