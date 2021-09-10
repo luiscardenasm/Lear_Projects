@@ -4768,6 +4768,13 @@ def ODM():
             ON.cell(row=2, column=len(columns_to_read_oo)+5).value="Overlap"
             ON.cell(row=2, column=len(columns_to_read_oo)+6).value=9.06
             ON.cell(row=3, column=len(columns_to_read_oo)+6).value=304.8
+            
+            ON.cell(row=1, column=len(columns_to_read_oo)+5).value="Reverse Tape"
+            ON.cell(row=1, column=len(columns_to_read_oo)+6).value="Longitudinal"
+            ON.cell(row=2, column=len(columns_to_read_oo)+5).value='''=SUM(AT5:AT5000)'''
+            ON.cell(row=2, column=len(columns_to_read_oo)+6).value='''=SUM(AU5:AU5000)'''
+            
+            
         
             secondary_headers_overstocks=["Lineal  Length Tape (M)","Usage FT","Length Tube MT","PN Conduit/Sleeve/Tape",
                                           "Tube Spot Tape-Type","Tube Spot Tape-Qty","Tube Spot Tape-Usage","Cut tape with knife","Cut @ specific length"]
