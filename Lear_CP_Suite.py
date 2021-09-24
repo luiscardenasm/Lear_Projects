@@ -4673,8 +4673,6 @@ def ODM():
                     NEN.cell(row=start_row_twist, column=3).value=float(contents[1])
                     start_row_twist=start_row_twist+1
                     
-                
-        
             #------------------------------------------------------------------------------#      
             #Read Overstocks original                                                      #
             #------------------------------------------------------------------------------# 
@@ -4692,8 +4690,8 @@ def ODM():
                 control_number_column_OS=columnainicial-1
                 if(requested==value):
                     break
-                
-
+            print("requested")
+            print(control_number_column_OS)
             control_list_oo=[]
             rowinicial=4
             for row in range(number_of_rows_OO-3):
@@ -4704,11 +4702,12 @@ def ODM():
                 
             #@------#read row from original overstocks and write row in new overstocks if valor==requested#------@#
             rowinicial=4
+            rowinicial_os_control=4
             for valor in control_list_oo:
                 if(str(valor)=="X"):
                     temp_container=[]
                     for columna in columns_to_read_oo:
-                        cell_obj = OO.cell(row = rowinicial, column = columna)
+                        cell_obj = OO.cell(row = rowinicial_os_control, column = columna)
                         value=str(cell_obj.value)
 
                         temp_container.append(value)
@@ -4720,6 +4719,7 @@ def ODM():
                             ON.cell(row=rowinicial+1, column=columna).value=temp_container[columna-1]
 
                     rowinicial=rowinicial+1
+                rowinicial_os_control=rowinicial_os_control+1
                     
             ovstck_size_rows=rowinicial
                 
@@ -4769,10 +4769,10 @@ def ODM():
             ON.cell(row=2, column=len(columns_to_read_oo)+6).value=9.06
             ON.cell(row=3, column=len(columns_to_read_oo)+6).value=304.8
             
-            ON.cell(row=1, column=len(columns_to_read_oo)+5).value="Reverse Tape"
-            ON.cell(row=1, column=len(columns_to_read_oo)+6).value="Longitudinal"
-            ON.cell(row=2, column=len(columns_to_read_oo)+5).value='''=SUM(AT5:AT5000)'''
-            ON.cell(row=2, column=len(columns_to_read_oo)+6).value='''=SUM(AU5:AU5000)'''
+            ON.cell(row=1, column=len(columns_to_read_oo)+12).value="Reverse Tape"
+            ON.cell(row=1, column=len(columns_to_read_oo)+13).value="Longitudinal"
+            ON.cell(row=2, column=len(columns_to_read_oo)+12).value='''=SUM('''+str(get_column_letter(len(columns_to_read_oo)+12))+'''5:'''+str(get_column_letter(len(columns_to_read_oo)+12))+'''5000)'''
+            ON.cell(row=2, column=len(columns_to_read_oo)+13).value='''=SUM('''+str(get_column_letter(len(columns_to_read_oo)+13))+'''5:'''+str(get_column_letter(len(columns_to_read_oo)+13))+'''5000)'''
             
             
         
