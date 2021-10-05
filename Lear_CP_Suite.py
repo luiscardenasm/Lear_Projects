@@ -4725,8 +4725,16 @@ def ODM():
                 
             #@------#add columns on overstocks costed#------@#
             ON.insert_cols(3)
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=3).value='''=IF(V'''+str(x)+'''="LT - Longitudinal Tape","Longitudinal",IF(B'''+str(x)+'''="Conduit","Conduit",IF(B'''+str(x)+'''="Heat_Shrink_Tube","Heatshrink",IF(B'''+str(x)+'''="High_Abrasion_Sleeve","Sleeve",IF(B'''+str(x)+'''="Rigid_tube","Rigid Tube",IF(B'''+str(x)+'''="Smooth_Tube","Smooth Tube",IF(B'''+str(x)+'''="Solid_tape","Overlap",IF(B'''+str(x)+'''="Spot_Tape","Spot Tape",IF(B'''+str(x)+'''="Spiral_tape","Spiral"," ")))))))))'''
+                
             ON.insert_cols(5)
-            ON.insert_cols(27)    
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=5).value='''=IF(OR(B'''+str(x)+'''="Conduit"),IF(X'''+str(x)+'''="Round_With_Slit","Slit Tube",IF(X'''+str(x)+'''="Round_Without_Slit","Unslit Tube")),IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Spiral",C'''+str(x)+'''="Spot Tape",C'''+str(x)+'''="Longitudinal"),IF(OR(F'''+str(x)+'''="PET_Woven_Cloth_Abrasion",F'''+str(x)+'''="PA_Woven_Cloth",F'''+str(x)+'''="PET/PA_Non_Woven_Fleece"),"Special",IF(F'''+str(x)+'''="PVC_FILM_TAPE","Sticky")),IF(OR(C'''+str(x)+'''="Rigid Tube",C'''+str(x)+'''="Smooth Tube"),IF(O'''+str(x)+'''="Slit","Slit Tube","Unslit Tube"),IF(OR(B'''+str(x)+'''="Heat_Shrink_Tube",B'''+str(x)+'''="Heatshrink",C'''+str(x)+'''="Sleeve"),""))))'''
+                
+            ON.insert_cols(26)
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=26).value='''=CONVERT(AA'''+str(x)+''', "mm", "in")'''
             
             #@------#ADD headers to overstocks costed worksheet#------@#
             temp_container=[]
@@ -4738,7 +4746,7 @@ def ODM():
                 if(columna==4):
                     temp_container.append("Labor2")
                     
-                if(columna==25):
+                if(columna==24):
                     temp_container.append("OD Inches")
                     
                 value=str(cell_obj.value)
@@ -4807,10 +4815,42 @@ def ODM():
             ON.cell(row=4, column=5).font = fontbolnormal
             ON.cell(row=4, column=5).fill=my_filllightgray
             
-            ON.cell(row=4, column=27).font = fontbolnormal
-            ON.cell(row=4, column=27).fill=my_filllightgray
+            ON.cell(row=4, column=26).font = fontbolnormal
+            ON.cell(row=4, column=26).fill=my_filllightgray
             
+            #@------#ADD Formulas to sec ovstck columns#------@#
+            #Lineal  Length Tape (M) Used only on tape (Overlap, Spiral and Longitudinal)
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=39).value='''=IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Spiral"),AH'''+str(x)+'''/1000,"")'''
             
+            #Usage FT needs to be calculated except for spot tape
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=40).value='''=IF(E'''+str(x)+'''=FALSE,"FALSE",IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Spiral"),_xlfn.IFERROR(_xlfn.IFS(C'''+str(x)+'''=$AM$1,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$1)/304.8),C'''+str(x)+'''=$AM$2,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$2)/304.8)),0),IF(OR(C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Heatshrink",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),CONVERT(AH'''+str(x)+''',"mm","ft"),IF(C'''+str(x)+'''="Spot Tape","",))))'''
+            
+            #Length Tube MT Needs to be calculated for conduit sleeve Hs Rigid tube and Smooth tube
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=41).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Heatshrink",C'''+str(x)+'''="Rigid Tube",C'''+str(x)+'''="Smooth Tube"),AH'''+str(x)+'''/1000,"")'''
+            
+            #PN Conduit/Sleeve/Tape
+            
+            #Tube Spot Tape-Type
+
+            #Tube Spot Tape-Qty (charge by row [1 tube or sleeve][2 longitudinal tape])
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=44).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Rigid Tube",C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Spot Tape",C'''+str(x)+'''="Smooth Tube"),1,IF(C'''+str(x)+'''="Longitudinal",2,""))'''
+
+            #Tube Spot Tape-Usage [spot tape usage][longitudinal tape & tube]
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=45).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Rigid Tube",C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Smooth Tube"),((Z'''+str(x)+'''*PI())*2.5/12)*AR5,IF(C'''+str(x)+'''="Spot Tape",CONVERT(AI'''+str(x)+''',"mm","ft"),""))'''
+
+            #Cut tape with knife
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=46).value='''=IF(V'''+str(x)+'''="RT - Reverse Tape",1,"")'''
+                
+            #Cut @ specific length
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=47).value='''=IF(V'''+str(x)+'''="LT - Longitudinal Tape",1,"")'''
+             
             #------------------------------------------------------------------------------#      
             #Read Harness Calculations OLD                                                 #
             #------------------------------------------------------------------------------#
