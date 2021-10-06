@@ -4224,7 +4224,6 @@ def ODM():
     
     #Reading tracking file
     
-
     File=[]
     PartNumber=[]
     Family=[]
@@ -4285,7 +4284,6 @@ def ODM():
         
         lists_to_fill=[Number,Name,ComponentName,Description,Quantity,Control]
 
-        
         os.chdir(path_calculations_folder)
         
         if(str(File[counter])!="None"):
@@ -4332,7 +4330,6 @@ def ODM():
             
             os.chdir(path_calculations_folder+"/"+directory_name)
                  
-    
             book_bom = openpyxl.load_workbook(directory_name+".xlsx")
             
             print(directory_name)
@@ -4364,7 +4361,6 @@ def ODM():
             #------------------------------------------------------------------------------#      
             #Read Assembly nav original                                                    #
             #------------------------------------------------------------------------------# 
-            
             
             #@------#identify requested PN column number#------@#
             
@@ -4453,8 +4449,6 @@ def ODM():
                             if(columna==25):
                                 Shield_Grp.append(temp_container[columna-1])
 
-    
-                            
                             #@------#get from to, to conn data and store in list#------@#
                             if(columna==4 or columna==7 ):
                                 list_from_to_conn.append(temp_container[columna-1])
@@ -4474,9 +4468,6 @@ def ODM():
                 rowinicial=rowinicial+1
                     
             counterNEO=counterNEO+1
-            
-
-
             
             #@------#compute unique twist pairs#------@#
             list_twist_information=[]
@@ -4541,8 +4532,6 @@ def ODM():
             list_from_to_term.append("Sn")
             list_from_to_term.sort()
 
-
-            
             #@------#write headers in new netlist#------@#
             list_of_headers=["Schematic Sub-System", "Schematic Wire Handle","Circuit #","From Conn",
                              "From Pin ID","From Term","To Conn","To Pin ID","To Term","Wire Guage",
@@ -4570,7 +4559,6 @@ def ODM():
                 NEN.cell(row=counterNEO+4, column=start_column_term).font = fontwhite
                 NEN.cell(row=counterNEO+4, column=start_column_term).fill=my_filldarkgray
 
-                
                 row_term_iter=counterNEO+5
                 for value in range(len(list_from_to_conn)):
                     if(str(terminaltype)=="Sn"):
@@ -4583,8 +4571,6 @@ def ODM():
             counterNEO_secondarytable_start=counterNEO+5
             counterNEO_secondarytable_start_record=counterNEO_secondarytable_start
             
-
-                
             #@------#write contents of secondary table [non repeated connector]#------@#
             for value in range(len(list_from_to_conn)):
                 current_row=counterNEO_secondarytable_start
@@ -4768,7 +4754,6 @@ def ODM():
             for row in range(ovstck_size_rows-4):
                 ON.cell(row=start_row_ovstck_requested, column=len(columns_to_read_oo)+4).value="X"
                 start_row_ovstck_requested=start_row_ovstck_requested+1
-                
                 
             #add calculation data
             ON.cell(row=1, column=len(columns_to_read_oo)+5).value="Spiral"
@@ -5036,6 +5021,7 @@ def ODM():
             #Write summary components tab                                                  #
             #------------------------------------------------------------------------------# 
             
+            
             #@------#WRITE HEADERS#------@#
             headers_SCC=["Commodity 1","Total","Commodity 2/Type Conn","Totals","Check","Final"]
             startrow_SCC=1
@@ -5145,7 +5131,45 @@ def ODM():
                 SCC.cell(row=start_row_wire, column=3).value=str(wire)
                 SCC.cell(row=start_row_wire, column=4).value="""=SUMIF('Assembly Nav costed'!$B$3:$B$5000,'Summary Component count'!C"""+str(start_row_wire)+""",'Assembly Nav costed'!$N$3:$N$5000)"""
                 start_row_wire=start_row_wire+1
-
+              
+            #@------#Write assembly part of table#------@#
+            
+            start_row_assembly=start_row_wire
+            
+            #Merge Works
+            SCC.merge_cells(start_row=start_row_assembly, start_column=1, end_row=start_row_assembly+4, end_column=1)
+            SCC.merge_cells(start_row=start_row_assembly, start_column=2, end_row=start_row_assembly+4, end_column=2)
+            SCC.merge_cells(start_row=start_row_assembly, start_column=6, end_row=start_row_assembly+4, end_column=6)
+            SCC.merge_cells(start_row=start_row_assembly, start_column=5, end_row=start_row_assembly+4, end_column=5)
+            
+            #Column 1
+            SCC.cell(row=start_row_assembly, column=1).value="Cable Assembly"
+            SCC.cell(row=start_row_assembly+5, column=1).value="Cable Assembly_POA"
+            
+            #Column 2
+            SCC.cell(row=start_row_assembly, column=2).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,A'''+str(start_row_assembly)+''')'''
+            SCC.cell(row=start_row_assembly+5, column=2).value='''=SUMIFS('Assembly Nav costed'!N3:N5000,'Assembly Nav costed'!C3:C5000,A'''+str(start_row_assembly+5)+''')'''
+            #Column3 
+            SCC.cell(row=start_row_assembly, column=3).value="Coax"
+            SCC.cell(row=start_row_assembly+1, column=3).value="Airbag"
+            SCC.cell(row=start_row_assembly+2, column=3).value="R2PP-E1"
+            SCC.cell(row=start_row_assembly+3, column=3).value="Ethernet"
+            SCC.cell(row=start_row_assembly+4, column=3).value="USB"
+            
+            #Column4
+            SCC.cell(row=start_row_assembly, column=4).value='''=SUMIF('Assembly Nav costed'!$D$3:$D$5000,C'''+str(start_row_assembly)+''','Assembly Nav costed'!$N$3:$N$5000)'''
+            SCC.cell(row=start_row_assembly+1, column=4).value='''=SUMIF('Assembly Nav costed'!$D$3:$D$5000,C'''+str(start_row_assembly+1)+''','Assembly Nav costed'!$N$3:$N$5000)'''
+            SCC.cell(row=start_row_assembly+2, column=4).value='''=SUMIF('Assembly Nav costed'!$D$3:$D$5000,C'''+str(start_row_assembly+2)+''','Assembly Nav costed'!$N$3:$N$5000)'''
+            SCC.cell(row=start_row_assembly+3, column=4).value='''=SUMIF('Assembly Nav costed'!$D$3:$D$5000,C'''+str(start_row_assembly+3)+''','Assembly Nav costed'!$N$3:$N$5000)'''
+            SCC.cell(row=start_row_assembly+4, column=4).value='''=SUMIF('Assembly Nav costed'!$D$3:$D$5000,C'''+str(start_row_assembly+4)+''','Assembly Nav costed'!$N$3:$N$5000)'''
+            
+            #Column5
+            SCC.cell(row=start_row_assembly, column=5).value='''=B'''+str(start_row_assembly)+'''=SUM(D'''+str(start_row_assembly)+''':D'''+str(start_row_assembly+4)+''')'''
+            
+            #Column6
+            SCC.cell(row=start_row_assembly, column=6).value='''=B'''+str(start_row_assembly)
+            SCC.cell(row=start_row_assembly+5, column=6).value='''=B'''+str(start_row_assembly+5)
+            
             book_bom.save(directory_name+".xlsx")
                         
         counter=counter+1
@@ -5204,8 +5228,6 @@ def ODM():
             CWWL.cell(row=start_row_cwwl, column=4).value=float(element[0])
             start_row_cwwl=start_row_cwwl+1
         
-            
-            
         #@------#Direct component Data#------@#
         #Clip/clamp Tape on Clip
         LR.cell(row=113, column=11).value="""='"""+str(path_calculations_folder)+"""/"""+str(directory_name)+"""\["""+str(directory_name)+""".xlsx]Summary Component count'!$D$3"""
