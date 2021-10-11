@@ -4823,6 +4823,8 @@ def ODM():
                 ON.cell(row=x, column=42).value='''=IF(C'''+str(x)+'''="Conduit",SUBSTITUTE(A'''+str(x)+''',"_Conduit",""),IF(C'''+str(x)+'''="Heatshrink",SUBSTITUTE(A'''+str(x)+''',"_Tube",""),IF(C'''+str(x)+'''="Spot Tape",A'''+str(x)+''',IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Spiral",C'''+str(x)+'''="Longitudinal"),A'''+str(x)+''',IF(C'''+str(x)+'''="Sleeve",SUBSTITUTE(A'''+str(x)+''',"_Sleeve","")&"_"&AH'''+str(x)+'''&"_"&ROUNDUP(AA'''+str(x)+''',0),IF(OR(C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),LEFT(A'''+str(x)+''',13)&"_"&AH'''+str(x)+'''&"_"&ROUNDUP(AA'''+str(x)+''',0),4))))))'''
             
             #Tube Spot Tape-Type
+            for x in range(5,ovstck_size_rows+1):
+                ON.cell(row=x, column=43).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Tube"),IF(C'''+str(x)+'''="Spot Tape",CONCAT(LEFT(A'''+str(x)+''',13),"_Spot"),IF(C'''+str(x)+'''="Sleeve",CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Sleeve"),"")))'''
 
             #Tube Spot Tape-Qty (charge by row [1 tube or sleeve][2 longitudinal tape])
             for x in range(5,ovstck_size_rows+1):
@@ -5204,24 +5206,82 @@ def ODM():
             import itertools
             #@------#Read Columns#------@#
             general_list=[]
+            Usage_list=[]
+            tape_list=[]
             
-            columns_to_read=[1,3,5,42]
+            columns_to_read=[1,3,5,42,40]
          
             rowinicial=5
             for cell in range(number_of_rows_OC-4):
                 temp_list=[]
+                usage_temp_list=[]
                 for columna in columns_to_read:
-                    cell_obj = OC.cell(row = rowinicial, column = columna)
-                    value=str(cell_obj.value)
-                    temp_list.append(value)
-
+                    if(columna!=40):
+                        cell_obj = OC.cell(row = rowinicial, column = columna)
+                        value=str(cell_obj.value)
+                        temp_list.append(value)
+                    if(columna==1 or columna==3 or columna==40):
+                        cell_obj = OC.cell(row = rowinicial, column = columna)
+                        value=str(cell_obj.value)
+                        usage_temp_list.append(value)
+                    # if(columna==1):
+                    #     cell_obj = OC.cell(row = rowinicial, column = columna)
+                    #     value=str(cell_obj.value)
+                    #     tape_list.append(value)
+                         
                 general_list.append(temp_list)
-                rowinicial=rowinicial+1
                 
+                if(usage_temp_list[1]=="Spiral" or usage_temp_list[1]=="Overlap" or usage_temp_list[1]=="Longitudinal"):
+                    Usage_list.append(usage_temp_list)
+                    tape_list.append(usage_temp_list[0])
+                rowinicial=rowinicial+1
+          
+        #Clean General List
         cleaned_list = list(general_list for general_list,_ in itertools.groupby(general_list))
-        for element in cleaned_list:
-            print(element)
+        
+        #Clean tape list
+        cleaned_tape_list = list(tape_list for tape_list,_ in itertools.groupby(tape_list))
+        
+        #Get largest usage tape
+        tape_dict={}
+        for tape in cleaned_tape_list:
+            temp_list=[]
+            for element in Usage_list:
+                if(element[0]==tape):
+                    temp_list.append(float(element[2]))
+            total_usage=sum(temp_list)
+            tape_dict[tape] = total_usage
             
+        #Get Max tape
+        max_key = max(tape_dict, key=tape_dict.get)
+            
+        print(max_key)
+
+        max_tape=max_key[0:13]
+        print(max_tape)
+        
+        OCW.cell(row=number_of_rows_OC+1, column=1).value="HUIO TAPE:"
+        OCW.cell(row=number_of_rows_OC+1, column=2).value=str(max_tape)
+
+        # for element in cleaned_list:
+        #     print(element)
+        
+        # print("#Break#")
+        
+        # for element in Usage_list:
+        #     print(element)
+            
+        # print("#Break#")
+        
+        # for element in cleaned_tape_list:
+        #     print(element)
+        
+        # print("#Break#")
+        
+
+        # print(tape_dict)
+            
+
         book_bom_read.close()
             
         #@------#Categorize Cleaned List Data#------@#
@@ -5271,10 +5331,17 @@ def ODM():
                     Conduit_Unslit.append(element)
                 else:
                     not_found.append(element)
-        
-        
                     
+        #Finding all Hearshtink and Sleeves
+        for element in cleaned_list:
+            if(element[1]=="Heatshrink"):
+                Heatshrink.append(element)
+            if(element[1]=="Sleeve"):
+                Sleeve.append(element)
+            else:
+                not_found.append(element)
                     
+            
         print("Overlap Special")
         print(Overlap_special)
         
@@ -5313,7 +5380,8 @@ def ODM():
             OCW.cell(row=OVSTCK2_START_ROW, column=4).value="EA"
             OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
             OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
-            
+                        
+            record_OverlapSpecial=OVSTCK2_START_ROW+1
             OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
             
             for tube in Conduit_Slit:
@@ -5324,7 +5392,142 @@ def ODM():
                 OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
                 OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
                 OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Slit Tube")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Slit Tube")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
             OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+            
+        #@------#Conduit UN Slit#------@#
+        if(len(Conduit_Unslit)>0):
+
+            
+            #Write Headers
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Conduit-Unslit Tube"
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+                
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value="FT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value="MT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).value="EA"
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                        
+            record_OverlapSpecial=OVSTCK2_START_ROW+1
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            for tube in Conduit_Slit:
+                OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(tube[3])
+                OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=COUNTIFS($AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Unslit Tube")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Unslit Tube")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+            
+        #@------#Heatshrink#------@#
+        if(len(Heatshrink)>0):
+
+            
+            #Write Headers
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Heatshrink"
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+                
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value="FT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value="MT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).value="EA"
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                        
+            record_OverlapSpecial=OVSTCK2_START_ROW+1
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            for Hssa in Heatshrink:
+                OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(Hssa[3])
+                OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=COUNTIFS($AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Heatshrink")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Heatshrink")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+            
+        #@------#Sleeve#------@#
+        if(len(Heatshrink)>0):
+
+            
+            #Write Headers
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Sleeve"
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+                
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value="FT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value="MT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).value="EA"
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                        
+            record_OverlapSpecial=OVSTCK2_START_ROW+1
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            for SLV in Sleeve:
+                OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(SLV[3])
+                OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=COUNTIFS($AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).font = fontwhite
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).fill=my_filldarkgray
+                OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Sleeve")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Sleeve")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+        
         
         #@------#Overlap Special#------@#
         if(len(Overlap_special)>0):
@@ -5703,4 +5906,4 @@ label_XML3 = Label(root,text="Compare Tool",bg=Color_Labels,fg="white").grid(row
 label_XML4 = Label(root,text="Prepare C&B",bg=Color_Labels,fg="white").grid(row=0,column=4,sticky=W+E,padx=1)
 label_XML4 = Label(root,text="ODM",bg=Color_Labels,fg="white").grid(row=0,column=5,sticky=W+E,padx=1)
 #label_XML3 = Label(root,text="PDF Extractor",bg=Color_Labels,fg="white").grid(pady=5,row=11,column=1,sticky=W+E,padx=1,columnspan=2)
-root.mainloop()
+root.mainloop() 
