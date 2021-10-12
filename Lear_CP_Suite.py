@@ -4824,7 +4824,7 @@ def ODM():
             
             #Tube Spot Tape-Type
             for x in range(5,ovstck_size_rows+1):
-                ON.cell(row=x, column=43).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Tube"),IF(C'''+str(x)+'''="Spot Tape",CONCAT(LEFT(A'''+str(x)+''',13),"_Spot"),IF(C'''+str(x)+'''="Sleeve",CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Sleeve"),"")))'''
+                ON.cell(row=x, column=43).value='''=IF(OR(C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),_xlfn.CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Tube"),IF(C'''+str(x)+'''="Spot Tape",_xlfn.CONCAT(LEFT(A'''+str(x)+''',13),"_Spot"),IF(C'''+str(x)+'''="Sleeve",_xlfn.CONCAT($B$'''+str(ovstck_size_rows+1)+''',"_Spot_Sleeve"),"")))'''
 
             #Tube Spot Tape-Qty (charge by row [1 tube or sleeve][2 longitudinal tape])
             for x in range(5,ovstck_size_rows+1):
@@ -5263,8 +5263,8 @@ def ODM():
         OCW.cell(row=number_of_rows_OC+1, column=1).value="HUIO TAPE:"
         OCW.cell(row=number_of_rows_OC+1, column=2).value=str(max_tape)
 
-        # for element in cleaned_list:
-        #     print(element)
+        for element in cleaned_list:
+            print(element)
         
         # print("#Break#")
         
@@ -5300,6 +5300,12 @@ def ODM():
         Sleeve=[]
         Heatshrink=[]
         
+        Longitudinal=[]
+        
+        Spot_tapes=[]
+        
+        General_tape=[]
+        
         not_found=[]
         
         #Finding all Overlap
@@ -5307,8 +5313,10 @@ def ODM():
             if(element[1]=="Overlap"):
                 if(element[2]=="Special"):
                     Overlap_special.append(element)
+                    General_tape.append(element)
                 if(element[2]=="Sticky"):
                     Spiral_Sticky.append(element)
+                    General_tape.append(element)
                 else:
                     not_found.append(element)
                         
@@ -5317,8 +5325,10 @@ def ODM():
             if(element[1]=="Spiral"):
                 if(element[2]=="Special"):
                     Spiral_Special.append(element)
+                    General_tape.append(element)
                 if(element[2]=="Sticky"):
                     Spiral_Sticky.append(element)
+                    General_tape.append(element)
                 else:
                     not_found.append(element)
                     
@@ -5332,27 +5342,45 @@ def ODM():
                 else:
                     not_found.append(element)
                     
-        #Finding all Hearshtink and Sleeves
+        #Finding all Hearshtink and Sleeves and Longitudinal
         for element in cleaned_list:
             if(element[1]=="Heatshrink"):
                 Heatshrink.append(element)
             if(element[1]=="Sleeve"):
                 Sleeve.append(element)
+            if(element[1]=="Longitudinal"):
+                Longitudinal.append(element)
+        
             else:
                 not_found.append(element)
+                
+        #Calculate all spot tapes([Conduit, SmoothTube, RigidTube, Longitudinal],[Spot],[Sleeve])
+        for element in cleaned_list:
+            if(element[1]=="Conduit" or element[1]=="Smooth Tube" or element[1]=="Rigid Tube" or element[1]=="Longitudinal"):
+                Spot_tapes.append(max_tape+"_Spot_Tube")
+            if(element[1]=="Spot Tape"):
+                Spot_tapes.append(element[0])
+            if(element[1]=="Sleeve"):
+                Spot_tapes.append(max_tape+"_Spot_Sleeve")
+                
+        #Clean Spot_tapes List
+        cleaned_list_Spot_tapes = list(set(Spot_tapes))
+        
+        print("SPOT TAPES LIST!")
+        print(cleaned_list_Spot_tapes)
                     
             
-        print("Overlap Special")
-        print(Overlap_special)
+        # print("Overlap Special")
+        # print(Overlap_special)
         
-        print("Overlap Sticky")
-        print(Overlap_Sticky)
+        # print("Overlap Sticky")
+        # print(Overlap_Sticky)
         
-        print("Spiral Sticky")
-        print(Spiral_Sticky)
+        # print("Spiral Sticky")
+        # print(Spiral_Sticky)
         
-        print("Spiral Special")
-        print(Spiral_Special)
+        # print("Spiral Special")
+        # print(Spiral_Special)
         
         #------------------------------------------------------------------------------#      
         #ovstck 2 Write calculations tables                                            #
@@ -5528,6 +5556,43 @@ def ODM():
             OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AO$5:$AO$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Sleeve")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
             OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
         
+        #@------#Longitudinal#------@#
+        if(len(Longitudinal)>0):
+
+            #Write Headers
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Longitudinal"
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+                
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value="Usage-FT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+            
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value="Total Lineal-MT"
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+            
+            record_OverlapSpecial=OVSTCK2_START_ROW+1
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+
+            for tape in Longitudinal:
+                OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(tape[3])
+                OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"'''+str(tape[2])+'''")'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"'''+str(tape[2])+'''")'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+                OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
+                OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Longitudinal")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Longitudinal")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
         
         #@------#Overlap Special#------@#
         if(len(Overlap_special)>0):
@@ -5686,6 +5751,129 @@ def ODM():
             OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Sticky")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
             OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Sticky")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
             OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+        
+        #@------#Spot Tapes#------@#
+            
+        #Write Headers
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Spot Tape"
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+            
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value="Usage-FT"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+        
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).value="Qty"
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        
+        record_OverlapSpecial=OVSTCK2_START_ROW+1
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        #Spot_Twisted
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="TA-BAA-AAA-BK_Spot_Twisted"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=((0.5*PI())*2.5/12)*C'''+str(OVSTCK2_START_ROW)
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        #_Spot_Clip
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(max_tape)+"_Spot_Clip"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=((0.5*PI())*2.5/12)*C'''+str(OVSTCK2_START_ROW)
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        #Spot_Splice
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="26-4412-BC_Spot_Splice"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=0.2931*C'''+str(OVSTCK2_START_ROW)
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        if(len(cleaned_list_Spot_tapes)>0):
+            
+            for spot in cleaned_list_Spot_tapes:
+                OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(spot)
+                OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AS$5:$AS$'''+str(number_of_rows_OC)+''',$AQ$5:$AQ$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AR$5:$AR$'''+str(number_of_rows_OC)+''',$AQ$5:$AQ$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''')'''
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+                OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+                # OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
+                # OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
+                OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+                
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+        # OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Sticky")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+        # OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Sticky")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+        
+        #@------#Diaper #------@#
+        
+        #Write Headers
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Diaper"
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+            
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value="Usage-FT"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+        
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).value="Qty"
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(max_tape)+"_Solid"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=0.75*PI()*4/12*C'''+str(OVSTCK2_START_ROW)
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+        
+        #@------#General Tape#------@#
+                
+        #Write Headers
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).value="General Tape"
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=1).fill=my_filldarkgray
+            
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value="Usage-FT"
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).fill=my_filldarkgray
+        
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).value="Usage-MT"
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        
+        OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+        
+        for tape in Spiral_Special:
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value=str(tape[3])
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$AP$5:$AP$'''+str(number_of_rows_OC)+''',$A'''+str(OVSTCK2_START_ROW)+''',$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+                
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
+            OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
+            OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+            OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
+        
+        
+            
+
  
             
         
