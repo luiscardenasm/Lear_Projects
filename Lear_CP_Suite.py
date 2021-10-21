@@ -4811,7 +4811,7 @@ def ODM():
             
             #Usage FT needs to be calculated except for spot tape
             for x in range(5,ovstck_size_rows+1):
-                ON.cell(row=x, column=40).value='''=IF(E'''+str(x)+'''=FALSE,"FALSE",IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Spiral"),_xlfn.IFERROR(_xlfn.IFS(C'''+str(x)+'''=$AM$1,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$1)/304.8),C'''+str(x)+'''=$AM$2,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$2)/304.8)),0),IF(OR(C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Heatshrink",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),CONVERT(AH'''+str(x)+''',"mm","ft"),IF(C'''+str(x)+'''="Spot Tape","",))))'''
+                ON.cell(row=x, column=40).value='''=IF(E'''+str(x)+'''=FALSE,"FALSE",IF(OR(C'''+str(x)+'''="Overlap",C'''+str(x)+'''="Spiral"),IFERROR(_xlfn.IFS(C'''+str(x)+'''=$AM$1,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$1)/304.8),C'''+str(x)+'''=$AM$2,((Z'''+str(x)+'''*AH'''+str(x)+'''*$AN$2)/304.8)),0),IF(OR(C'''+str(x)+'''="Sleeve",C'''+str(x)+'''="Conduit",C'''+str(x)+'''="Longitudinal",C'''+str(x)+'''="Heatshrink",C'''+str(x)+'''="Smooth Tube",C'''+str(x)+'''="Rigid Tube"),CONVERT(AH'''+str(x)+''',"mm","ft"),IF(C'''+str(x)+'''="Spot Tape","",))))'''
             
             #Length Tube MT Needs to be calculated for conduit sleeve Hs Rigid tube and Smooth tube
             for x in range(5,ovstck_size_rows+1):
@@ -5384,6 +5384,12 @@ def ODM():
         cleaned_general_tape = list(set(cleaned_general_tape))
         print(cleaned_general_tape)
         
+        DM=cleaned_general_tape.count("TA-BAA-AAA-BK")
+        
+        if(DM==0):
+            cleaned_general_tape.append("TA-BAA-AAA-BK")
+            
+        
                     
             
         # print("Overlap Special")
@@ -5850,11 +5856,15 @@ def ODM():
         OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=0.75*PI()*4/12*C'''+str(OVSTCK2_START_ROW)
         OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
         OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
+        OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
+        OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
+        
         OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
         
         finaltable_end=OVSTCK2_START_ROW-2
         #@------#General Tape#------@#
-                
+        
+        gen_tape_table_start=OVSTCK2_START_ROW+1
         #Write Headers
         OCW.cell(row=OVSTCK2_START_ROW, column=1).value="General Tape"
         OCW.cell(row=OVSTCK2_START_ROW, column=1).font = fontwhite
@@ -5876,25 +5886,20 @@ def ODM():
             OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=CONVERT(B'''+str(OVSTCK2_START_ROW)+''',"ft","m")'''
             OCW.cell(row=OVSTCK2_START_ROW, column=3).font = fontwhite
             OCW.cell(row=OVSTCK2_START_ROW, column=3).fill=my_filldarkgray
-            #OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
-            #OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=4).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',5,0)'''
+            OCW.cell(row=OVSTCK2_START_ROW, column=5).value='''=VLOOKUP(A'''+str(OVSTCK2_START_ROW)+'''&"*",$A$5:$F$'''+str(number_of_rows_OC)+''',6,0)'''
             OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
                 
         OCW.cell(row=OVSTCK2_START_ROW, column=1).value="Total"
-        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(record_OverlapSpecial)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
-        OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(record_OverlapSpecial)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
+        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUM(B'''+str(gen_tape_table_start)+''':B'''+str(OVSTCK2_START_ROW-1)+''')'''
+        OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUM(C'''+str(gen_tape_table_start)+''':C'''+str(OVSTCK2_START_ROW-1)+''')'''
         OVSTCK2_START_ROW=OVSTCK2_START_ROW+1
         OCW.cell(row=OVSTCK2_START_ROW, column=1).value="validation"
-        OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
-        OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
+        #OCW.cell(row=OVSTCK2_START_ROW, column=2).value='''=SUMIFS($AN$5:$AN$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(B'''+str(OVSTCK2_START_ROW-1)+''')'''
+        #OCW.cell(row=OVSTCK2_START_ROW, column=3).value='''=SUMIFS($AM$5:$AM$'''+str(number_of_rows_OC)+''',$C$5:$C$'''+str(number_of_rows_OC)+''',"Spiral",$E$5:$E$'''+str(number_of_rows_OC)+''',"Special")-(C'''+str(OVSTCK2_START_ROW-1)+''')'''
         OVSTCK2_START_ROW=OVSTCK2_START_ROW+2
         
-        
-            
-
- 
-            
-        
+    
         book_bom_write.save(directory_name+".xlsx")
         
         counter=counter+1
@@ -5994,7 +5999,7 @@ def ODM2():
         
         #@------#Read old sheets#------@#
         BS=book_bom["Assembly Nav"]
-
+        
         #print(directory_name+"/"+directory_name+".xlsx")
         number_of_rows=BS.max_row
         print(number_of_rows)
@@ -6032,13 +6037,42 @@ def ODM2():
         MS.cell(row=element+1, column=6).value="""=VLOOKUP(B"""+str(element+1)+""",'"""+str(path2)+"""\[slave2.xls]Innovator'!$A$2:$P$5000,16,0)"""
     mw.save("master.xlsx")
     
+def BOMCONSOLIDATION():
+    
+    #------------------------------------------------------------------------------#      
+    #Select program folder and get paths of calculations and Technical Information #
+    #------------------------------------------------------------------------------# 
+    pyautogui.alert(text='Select technical information files', title='Select File', button='OK')
+    path2 = askdirectory(title='Select Folder') # shows dialog box and return the path
+    
+    #print(path2)
+    list_of_directories=os.listdir(path2)
+    os.chdir(path2)
+
+    print(list_of_directories)
+    for file in list_of_directories:
+        temp_list_files=[]
+        if("Tracking" not in str(file)):
+            os.chdir(path2+"/"+file)
+            print(file)
+            temp_list_files=os.listdir(file)
+            print(temp_list_files)
+            
+            #finding BOM
+            bom=[]
+            for element in temp_list_files:
+                if("")
+            
+        
+
+    
 def OpenUrl():
     webbrowser.open_new("https://learcorporation-my.sharepoint.com/:f:/g/personal/lcardenasmontaz_lear_com/EmhvprrX705FoDRji8Od_IcBuStgZ4Ak21wpSC-t_WQUGg?e=nHMbKu")
 
 #GUI-------------------------------------------------------------------------------------------------------------------------------------------------
 root = tk.Tk()
 root.title("CP Suite Tool")
-root.geometry("530x160")
+root.geometry("658x160")
 
 root.resizable(False, False)
 
@@ -6083,9 +6117,13 @@ Button_BC_Prepare =tk.Button(root,
                    text="Select Files",bg="white",relief="ridge",
                    command=ODM2).grid(pady=5, padx=1,row=1,column=5,sticky=N+S+E+W,rowspan=1)
 
+Button_BC_Prepare =tk.Button(root,
+                   text="Select Folder",bg="white",relief="ridge",
+                   command=BOMCONSOLIDATION).grid(pady=5, padx=1,row=1,column=6,sticky=N+S+E+W,rowspan=2)
+
 Button_info = tk.Button(root,
                    text="How do i use these scripts?",bg="white",relief="ridge",
-                   command=OpenUrl).grid(pady=5, padx=1,row=7,column=1,sticky=N+S+E+W,columnspan=5)
+                   command=OpenUrl).grid(pady=5, padx=1,row=7,column=1,sticky=N+S+E+W,columnspan=6)
 
 
 
@@ -6100,7 +6138,7 @@ style.layout('text.Horizontal.TProgressbar',
 style.configure('text.Horizontal.TProgressbar', text='0 %')
 
 bar = Progressbar(root, length=150, style='black.Horizontal.TProgressbar')
-bar.grid(column=1, row=15,columnspan=5, padx=1,sticky=N+S+E+W,rowspan=3)
+bar.grid(column=1, row=15,columnspan=6, padx=1,sticky=N+S+E+W,rowspan=3)
 
 
 
@@ -6111,5 +6149,6 @@ label_XML2 = Label(root,text="PO PDF Extractor (Daimler)",bg=Color_Labels,fg="wh
 label_XML3 = Label(root,text="Compare Tool",bg=Color_Labels,fg="white").grid(row=0,column=3,sticky=W+E,padx=1)
 label_XML4 = Label(root,text="Prepare C&B",bg=Color_Labels,fg="white").grid(row=0,column=4,sticky=W+E,padx=1)
 label_XML4 = Label(root,text="ODM",bg=Color_Labels,fg="white").grid(row=0,column=5,sticky=W+E,padx=1)
+label_XML5 = Label(root,text="GM BOM Consolidator",bg=Color_Labels,fg="white").grid(row=0,column=6,sticky=W+E,padx=1)
 #label_XML3 = Label(root,text="PDF Extractor",bg=Color_Labels,fg="white").grid(pady=5,row=11,column=1,sticky=W+E,padx=1,columnspan=2)
 root.mainloop() 
