@@ -6048,22 +6048,40 @@ def BOMCONSOLIDATION():
     #print(path2)
     list_of_directories=os.listdir(path2)
     os.chdir(path2)
-
-    print(list_of_directories)
+    #2997215
+    
+    list_all_records_bom=[]
+    #print(list_of_directories)
     for file in list_of_directories:
         temp_list_files=[]
         if("Tracking" not in str(file)):
             os.chdir(path2+"/"+file)
-            print(file)
-            temp_list_files=os.listdir(file)
-            print(temp_list_files)
+            print("[Folder:"+str(file)+"]")
+            temp_list_files=os.listdir(path2+"/"+file)
+            for archive in temp_list_files:
+                if(archive[-8:]=="BOM.xlsx" and archive[:2]!="~$"):
+                    BOM=archive
+                    print(archive)
+                    
+            book_bom = openpyxl.load_workbook(str(BOM))
+                        
+            #@------#Read old sheets#------@#
+            BS=book_bom["Assembly Nav costed"]
+
+            number_of_rows=BS.max_row
+            #------------------------------------------------------------------------------#      
+            #Read Assembly nav Costed                                                      #
+            #------------------------------------------------------------------------------# 
             
-            #finding BOM
-            bom=[]
-            for element in temp_list_files:
-                if("")
-            
-        
+            columns_to_read=[2,11,6,8,3,4]
+            for renglon in range(3,number_of_rows):
+                temp_list=[]
+                for column in column_to_read:
+                    cell_obj = BS.cell(row = renglon, column = column)
+                    value=str(cell_obj.value)
+                    temp_list.append(value)
+                print(temp_list)
+
 
     
 def OpenUrl():
