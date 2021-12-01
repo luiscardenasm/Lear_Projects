@@ -122,11 +122,15 @@ underline='none',
 strike=False,
 color='000000')
 
-my_green = openpyxl.styles.colors.Color(rgb='a8f0bc')
-my_fillgreen = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_green)
 
-my_darkgreen = openpyxl.styles.colors.Color(rgb='00003300')
-my_filldarkgreen = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkgreen)
+
+#my_green = openpyxl.styles.colors.Color(rgb='a8f0bc')
+# my_fillgreen = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_green)
+
+my_fillgreen = PatternFill(fill_type=None,start_color='a8f0bc',end_color='a8f0bc')
+
+# my_darkgreen = openpyxl.styles.colors.Color(rgb='00003300')
+# my_filldarkgreen = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkgreen)
 
 
 
@@ -139,11 +143,11 @@ underline='none',
 strike=False,
 color='ffffff')
 
-my_darkgray = openpyxl.styles.colors.Color(rgb='333333')
-my_filldarkgray = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkgray)
+# my_darkgray = openpyxl.styles.colors.Color(rgb='333333')
+# my_filldarkgray = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkgray)
 
-my_lightgray = openpyxl.styles.colors.Color(rgb='C5C5C5')
-my_filllightgray = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_lightgray)
+# my_lightgray = openpyxl.styles.colors.Color(rgb='C5C5C5')
+# my_filllightgray = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_lightgray)
 
 fontred = Font(name='Calibri',
 size=11,
@@ -173,18 +177,18 @@ underline='none',
 strike=False,
 color='000000')
     
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
+# my_red = openpyxl.styles.colors.Color(rgb='f29da4')
+# my_fillred = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_red)
 
-my_red = openpyxl.styles.colors.Color(rgb='f29da4')
-my_fillred = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_red)
+# my_darkred = openpyxl.styles.colors.Color(rgb='82000b')
+# my_filldarkred = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkred)
 
-my_darkred = openpyxl.styles.colors.Color(rgb='82000b')
-my_filldarkred = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_darkred)
+# my_orange = openpyxl.styles.colors.Color(rgb='ffac38')
+# my_fillorange = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_orange)
 
-my_orange = openpyxl.styles.colors.Color(rgb='ffac38')
-my_fillorange = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_orange)
-
-my_yellow = openpyxl.styles.colors.Color(rgb='fff3c2')
-my_fillyellow = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_yellow)
+# my_yellow = openpyxl.styles.colors.Color(rgb='fff3c2')
+# my_fillyellow = openpyxl.styles.fills.PatternFill(patternType='solid', fgColor=my_yellow)
 
 alignment = Alignment(horizontal='center',
                       vertical='center',
@@ -2226,9 +2230,6 @@ def Button_Comparer_V2():
                 row=row+1
                 counter=counter+1
             
-
-    
-            
             minidict = dict(zip(lista_pn, lista_quants))
     
             minidict2=dict(zip(lista_pn, zip(lista_quants, lista_uom)))
@@ -4155,6 +4156,11 @@ def BOM_CUTSHEET_PREPARATION():
 def ODM():
     
     import win32com.client
+        
+
+    
+    my_filldarkgray = PatternFill(fill_type='solid',start_color='333333',end_color='333333')
+    my_filllightgray = PatternFill(fill_type='solid',start_color='C5C5C5',end_color='C5C5C5')
 
     
     #------------------------------------------------------------------------------#      
@@ -6038,32 +6044,45 @@ def ODM2():
     mw.save("master.xlsx")
     
 def BOMCONSOLIDATION():
-    
+    import win32com.client
+    from win32com.client import Dispatch
     #------------------------------------------------------------------------------#      
     #Select program folder and get paths of calculations and Technical Information #
     #------------------------------------------------------------------------------# 
     pyautogui.alert(text='Select technical information files', title='Select File', button='OK')
     path2 = askdirectory(title='Select Folder') # shows dialog box and return the path
+
     
     #print(path2)
     list_of_directories=os.listdir(path2)
     os.chdir(path2)
     #2997215
     
+    #Create compilated BOM file
+    wb = openpyxl.Workbook()
+    wb.create_sheet('Consolidated_BOM')
+    std=wb.get_sheet_by_name('Sheet')
+    wb.remove_sheet(std)
+    MS=wb['Consolidated_BOM']
+    wb.save(filename='Consolidated_BOM.xlsx')
+    
+    
     list_all_records_bom=[]
-    #print(list_of_directories)
+    print(list_of_directories)
     for file in list_of_directories:
-        temp_list_files=[]
-        if("Tracking" not in str(file)):
+        temp_list_records=[]
+        print(file)
+        if(file!='~$Consolidated_BOM.xlsx'):
+
             os.chdir(path2+"/"+file)
             print("[Folder:"+str(file)+"]")
-            temp_list_files=os.listdir(path2+"/"+file)
-            for archive in temp_list_files:
-                if(archive[-8:]=="BOM.xlsx" and archive[:2]!="~$"):
-                    BOM=archive
-                    print(archive)
-                    
-            book_bom = openpyxl.load_workbook(str(BOM))
+            bom=str(file)+".xlsx"
+            print(str(file))
+            print(path2+"/"+file+"/"+str(bom))
+            
+            wb.create_sheet(file)
+            TEMPS=wb[file]
+            book_bom = openpyxl.load_workbook(path2+"/"+file+"/"+str(bom),data_only=True)
                         
             #@------#Read old sheets#------@#
             BS=book_bom["Assembly Nav costed"]
@@ -6074,23 +6093,321 @@ def BOMCONSOLIDATION():
             #------------------------------------------------------------------------------# 
             
             columns_to_read=[2,11,6,8,3,4]
+            columns_to_read_total=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
             for renglon in range(3,number_of_rows):
                 temp_list=[]
-                for column in column_to_read:
+                temp_list_small=[]
+                for column in columns_to_read_total:
                     cell_obj = BS.cell(row = renglon, column = column)
                     value=str(cell_obj.value)
                     temp_list.append(value)
-                print(temp_list)
+                for column in columns_to_read:
+                    cell_obj = BS.cell(row = renglon, column = column)
+                    value=str(cell_obj.value)
+                    temp_list_small.append(value)
+                    
+                list_all_records_bom.append(temp_list_small)
+                temp_list_records.append(temp_list)
+            #@------#Write records on new sheet#------@#
 
+            start_row=2
+            for record in temp_list_records:
+                start_column=1
+                for element in record:
+                    if(element!='None'):
+                        if(start_column==14):
+                            try:
+                                TEMPS.cell(row=start_row, column=start_column).value=float(element)
+                            except ValueError:
+                                TEMPS.cell(row=start_row, column=start_column).value=element
+
+                        else:
+                            TEMPS.cell(row=start_row, column=start_column).value=element
+                    start_column=start_column+1
+                start_row=start_row+1
+                
+            start_row=2
+            start_column=16
+            for record in list_all_records_bom:
+                TEMPS.cell(row=start_row, column=start_column).value="""=_xlfn.CONCAT(B"""+str(start_row)+""",K"""+str(start_row)+""",F"""+str(start_row)+""",H"""+str(start_row)+""",C"""+str(start_row)+""",D"""+str(start_row)+""")"""
+                start_row=start_row+1  
+                
+    #------------------------------------------------------------------------------#      
+    #Clean lists for consolidated BOM                                              #
+    #------------------------------------------------------------------------------# 
+    list_all_records_bom = list(map(list,set(map(tuple,list_all_records_bom))))
+
+    list_all_records_bom = sorted(list_all_records_bom, key=lambda x: x[0])
+    for element in list_all_records_bom:
+        print(element)
+    start_row=2
+    for record in list_all_records_bom:
+        start_column=1
+        for element in record:
+            if(element!='None'):
+                MS.cell(row=start_row, column=start_column).value=element
+            start_column=start_column+1
+        start_row=start_row+1
+        
+     #@------#Write records ID CONSOLIDATED BOM#------@#
+
+    start_row=2
+    start_column=7
+    for record in list_all_records_bom:
+        MS.cell(row=start_row, column=start_column).value="""=_xlfn.CONCAT(A"""+str(start_row)+""",B"""+str(start_row)+""",C"""+str(start_row)+""",D"""+str(start_row)+""",E"""+str(start_row)+""",F"""+str(start_row)+""")"""
+        start_row=start_row+1
+    
+    #@------#add modules to the consolidated BOOM#------@#
+
+    start_column=8
+    for file in list_of_directories:
+        start_row=1
+        print(file)
+        if(file!='~$Consolidated_BOM.xlsx'):
+            MS.cell(row=start_row, column=start_column).value=str(file)
+            start_row=2
+            for element in list_all_records_bom:
+                MS.cell(row=start_row, column=start_column).value="""=SUMIF('"""+str(file)+"""'!$P$2:$P$5000,Consolidated_BOM!G"""+str(start_row)+""",'"""+str(file)+"""'!$N$2:$N$5000)"""
+                start_row=start_row+1
+            MS.cell(row=start_row, column=start_column).value="""=SUM("""+str(get_column_letter(start_column))+"""2"""+""":"""+str(get_column_letter(start_column))+str(start_row-1)+""")"""
+            start_row=start_row+1
+            MS.cell(row=start_row, column=start_column).value="""="""+str(get_column_letter(start_column))+str(start_row-1)+"""=SUM('"""+str(file)+"""'!N2:N5000)"""
+            start_column=start_column+1
+            
+            
+                
+                
+                #print(len(list_all_records_bom))
+    
+    os.chdir(path2)
+    wb.save(filename='Consolidated_BOM.xlsx')
+    
+def BOMCONSOLIDATIONXC():
+    
+    my_filldarkgray = PatternFill(fill_type='solid',start_color='333333',end_color='333333')
+    my_filllightgray = PatternFill(fill_type='solid',start_color='C5C5C5',end_color='C5C5C5')
+    
+    pyautogui.alert(text='Select technical information files', title='Select File', button='OK')
+    path2 = askdirectory(title='Select Folder') # shows dialog box and return the path
 
     
+    #print(path2)
+    list_of_directories=os.listdir(path2)
+    os.chdir(path2)
+    #2997215
+    
+    #Create compilated BOM file
+    wb = openpyxl.Workbook()
+    wb.create_sheet('Consolidated_BOM')
+    std=wb.get_sheet_by_name('Sheet')
+    wb.remove_sheet(std)
+    MS=wb['Consolidated_BOM']
+    wb.save(filename='Consolidated_BOM.xlsx')
+    
+    list_all_master=[]
+    list_directory_data_all=[]
+    for directory in list_of_directories:
+        temp_list_directory_data=[]
+        print("-------------------------------------------------------------------------------")
+        print(directory)
+        temp_list_directory_data.append(directory)
+        os.chdir(path2+"/"+str(directory))
+
+        list_files=os.listdir(path2+"/"+str(directory))
+        
+        list_files_2=[]
+        list_all_data_per_file=[]
+        for file in list_files:
+            if("BOM" in str(file) or "bom" in str(file)):
+                list_files_2.append(file)
+            
+                if(len(list_files_2)==1):
+                    print(len(list_files_2))    
+                    book_bom = openpyxl.load_workbook(path2+"/"+str(directory+"/"+str(file)),data_only=True)
+                    BS=book_bom["Detail"]
+                    number_of_rows=BS.max_row
+                    
+                    temp_list_directory_data.append(number_of_rows)
+                    print(number_of_rows)
+                    
+                    ##@------#master number#------@#
+                    start_column=2
+                    start_row=4
+                    cell_obj = BS.cell(row = start_row, column = start_column)
+                    value=str(cell_obj.value)
+                    master_pn=value
+                    master=value[0:7]
+                    print(master)
+                    ##@------#Get number of derivatives#------@#
+                    start_column=1
+                    start_row=9
+
+                    derivatives=[]
+                    derivatives_column_index=[]
+                    while True:
+                        cell_obj = BS.cell(row = start_row, column = start_column)
+                        value=str(cell_obj.value)
+                        if(str(master) in str(value[0:7])):
+                            derivatives.append(value)
+                            derivatives_column_index.append(start_column)
+                        start_column=start_column+1    
+                        if(value=="TOTAL"):
+                            break
+                    print(derivatives)
+                    temp_list_directory_data.append(derivatives)
+                    print(derivatives_column_index)
+
+                    
+                    ##@------#Get columns_to_read_index#------@#
+                    columns_to_read=["EPN","Type","Group","Mat Code","CPN","Part Description","UOM MM/G"]
+                    start_column=1
+                    start_row=9
+                    columns_to_read_index=[]
+                    while True:
+                        cell_obj = BS.cell(row = start_row, column = start_column)
+                        value=str(cell_obj.value)
+                        if(value in columns_to_read):
+                            columns_to_read_index.append(start_column)
+                        start_column=start_column+1 
+                        if(value=="TOTAL"):
+                            break
+                    print(columns_to_read_index)    
+                    ##@------#Get columns information#------@#
+                    
+                    start_row=11
+                    while True:
+                        temp_record=[]
+                        temp_record2=[]
+                        for column in columns_to_read_index:
+                            start_column=column
+                            cell_obj = BS.cell(row = start_row, column = start_column)
+                            value=str(cell_obj.value)
+                            temp_record.append(value)
+                            temp_record2.append(value)
+                        list_all_master.append(temp_record)
+                        list_all_data_per_file.append(temp_record2)
+
+                        start_row=start_row+1
+                        if(start_row==number_of_rows):
+                            break
+                    
+                    
+                    ##@------#Get derivative quantities#------@#
+
+                    column_counter=0
+                    for element in derivatives:
+                        start_row=11
+                        print("Derivative:"+str(column_counter))
+                        start_column=derivatives_column_index[column_counter]
+                        data_counter=0
+
+                        for valor in range (number_of_rows-11):
+                            cell_obj = BS.cell(row = start_row, column = start_column)
+                            value=str(cell_obj.value)
+                            
+                            list_all_data_per_file[data_counter].append(float(value))
+                            
+
+                            start_row=start_row+1
+                            data_counter=data_counter+1
+
+                        column_counter=column_counter+1
+                    
+        ##@------#Add direcotry info to master directory list#------@#
+        temp_list_directory_data.append(master_pn)
+        list_directory_data_all.append(temp_list_directory_data)
+        ##@------#Write new sheet#------@#
+            
+        wb.create_sheet(master_pn)
+        TEMPS=wb[master_pn]
+        
+        start_row=1
+        start_column=1
+        
+        for element in columns_to_read:
+            TEMPS.cell(row=start_row, column=start_column).value=str(element)
+            start_column=start_column+1
+            
+        for element in derivatives:
+            TEMPS.cell(row=start_row, column=start_column).value=str(element)
+            start_column=start_column+1
+        
+
+        start_row=2
+        
+        for element in list_all_data_per_file:
+            start_column=1
+            for data in element:
+                TEMPS.cell(row=start_row, column=start_column).value=data
+                start_column=start_column+1
+            start_row=start_row+1
+
+    list_all_master = list(map(list,set(map(tuple,list_all_master))))
+    list_all_master = sorted(list_all_master, key=lambda x: x[0])
+    
+    ##@------#Write information on consolidated BOM#------@#
+    
+    columns_to_write=[1,2,3,4,5,6,7]
+    
+    start_row=6
+    for column in columns_to_write:       
+        MS.cell(row=start_row, column=column).value=str(columns_to_read[int(column)-1])
+        MS.cell(row=start_row, column=column).font = fontwhite
+        MS.cell(row=start_row, column=column).fill=my_filldarkgray
+        
+    start_row=8
+    for record in list_all_master:
+        start_column=1
+        for data in record:
+            MS.cell(row=start_row, column=start_column).value=str(data)
+            start_column=start_column+1
+        start_row=start_row+1
+        
+    start_row=6
+    start_column=9
+    start_column_header=9
+    for element in list_directory_data_all:
+        start_counter_pivot=8
+        
+        start_row_header=5
+
+        MS.merge_cells(start_row=start_row_header, start_column=start_column, end_row=start_row_header, end_column=(start_column+int(len(element[2]))-1))
+        MS.cell(row=start_row_header, column=start_column).value=str(directory)
+        MS.cell(row=start_row_header, column=start_column).font = fontwhite
+        MS.cell(row=start_row_header, column=start_column).fill=my_filldarkgray
+        
+        for data in element[2]:
+           MS.cell(row=start_row, column=start_column).value=str(data)
+           MS.cell(row=start_row, column=start_column).font = fontbold
+           MS.cell(row=start_row, column=start_column).fill=my_filllightgray
+           
+
+           start_row2=8
+           for record in list_all_master:
+               MS.cell(row=start_row2, column=start_column).value="""=IFERROR(VLOOKUP(A"""+str(start_row2)+""",'"""+str(element[3])+"""'!$A$2:$AA$5000,"""+str(start_counter_pivot)+""",0),0)"""
+               start_row2=start_row2+1
+           MS.cell(row=start_row2, column=start_column).value="""=SUM("""+str(get_column_letter(start_column))+"""8:"""+str(get_column_letter(start_column))+str(start_row2-1)+""")"""
+           start_row2=start_row2+1
+           MS.cell(row=start_row2, column=start_column).value="""="""+str(get_column_letter(start_column))+str(start_row2-1)+"""=SUM('"""+str(element[3])+"""'!"""+str(get_column_letter(start_counter_pivot))+"""2:"""+str(get_column_letter(start_counter_pivot))+"""5000)"""
+           
+           start_column=start_column+1
+           start_counter_pivot=start_counter_pivot+1
+           
+           start_column_header=start_column
+           
+        start_column=start_column+1
+        
+    os.chdir(path2)
+    wb.save(filename='Consolidated_BOM.xlsx')
+                                
+                        
 def OpenUrl():
     webbrowser.open_new("https://learcorporation-my.sharepoint.com/:f:/g/personal/lcardenasmontaz_lear_com/EmhvprrX705FoDRji8Od_IcBuStgZ4Ak21wpSC-t_WQUGg?e=nHMbKu")
 
 #GUI-------------------------------------------------------------------------------------------------------------------------------------------------
 root = tk.Tk()
 root.title("CP Suite Tool")
-root.geometry("658x160")
+root.geometry("782x160")
 
 root.resizable(False, False)
 
@@ -6139,9 +6456,17 @@ Button_BC_Prepare =tk.Button(root,
                    text="Select Folder",bg="white",relief="ridge",
                    command=BOMCONSOLIDATION).grid(pady=5, padx=1,row=1,column=6,sticky=N+S+E+W,rowspan=2)
 
+Button_BC_Prepare =tk.Button(root,
+                   text="BOM",bg="white",relief="ridge",
+                   command=BOMCONSOLIDATIONXC).grid(pady=5, padx=1,row=1,column=7,sticky=N+S+E+W,rowspan=1)
+
+Button_BC_Prepare =tk.Button(root,
+                   text="LABOR",bg="white",relief="ridge",
+                   command=BOMCONSOLIDATIONXC).grid(pady=5, padx=1,row=2,column=7,sticky=N+S+E+W,rowspan=2)
+
 Button_info = tk.Button(root,
                    text="How do i use these scripts?",bg="white",relief="ridge",
-                   command=OpenUrl).grid(pady=5, padx=1,row=7,column=1,sticky=N+S+E+W,columnspan=6)
+                   command=OpenUrl).grid(pady=5, padx=1,row=7,column=1,sticky=N+S+E+W,columnspan=7)
 
 
 
@@ -6156,7 +6481,7 @@ style.layout('text.Horizontal.TProgressbar',
 style.configure('text.Horizontal.TProgressbar', text='0 %')
 
 bar = Progressbar(root, length=150, style='black.Horizontal.TProgressbar')
-bar.grid(column=1, row=15,columnspan=6, padx=1,sticky=N+S+E+W,rowspan=3)
+bar.grid(column=1, row=15,columnspan=7, padx=1,sticky=N+S+E+W,rowspan=3)
 
 
 
@@ -6168,5 +6493,6 @@ label_XML3 = Label(root,text="Compare Tool",bg=Color_Labels,fg="white").grid(row
 label_XML4 = Label(root,text="Prepare C&B",bg=Color_Labels,fg="white").grid(row=0,column=4,sticky=W+E,padx=1)
 label_XML4 = Label(root,text="ODM",bg=Color_Labels,fg="white").grid(row=0,column=5,sticky=W+E,padx=1)
 label_XML5 = Label(root,text="GM BOM Consolidator",bg=Color_Labels,fg="white").grid(row=0,column=6,sticky=W+E,padx=1)
+label_XML6 = Label(root,text="XC BOM Consolidator",bg=Color_Labels,fg="white").grid(row=0,column=7,sticky=W+E,padx=1)
 #label_XML3 = Label(root,text="PDF Extractor",bg=Color_Labels,fg="white").grid(pady=5,row=11,column=1,sticky=W+E,padx=1,columnspan=2)
 root.mainloop() 
